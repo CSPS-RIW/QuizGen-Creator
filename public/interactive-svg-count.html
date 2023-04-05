@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive SVG</title>
+  <style>
+    .success-message {
+      display: none;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    svg a{cursor: pointer;}
+  </style>
+</head>
+<body>
+  <div id="svg-container">
+    <!-- Your inline SVG code goes here -->
+  </div>
+  <div id="success-message" class="success-message">
+    All items have been clicked!
+  </div>
+  <script>
+    const anchorElements = document.querySelectorAll('#svg-container a');
+    const anchorCount = anchorElements.length;
+    const clickedAnchors = new Set();
+
+    anchorElements.forEach(anchor => {
+      anchor.addEventListener('click', (event) => {
+        event.preventDefault();
+        clickedAnchors.add(anchor);
+
+        if (clickedAnchors.size === anchorCount) {
+          const successMessage = document.getElementById('success-message');
+          successMessage.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

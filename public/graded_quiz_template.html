@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Graded Quiz</title>
+		<style>
+			.option {
+				/* Add your preferred button styles here */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="graded-quiz">
+			<div id="question-container">
+				<h3 id="question-number"></h3>
+				<ul id="options-list" aria-live="polite"></ul>
+			</div>
+			<div id="feedback-container" style="display: none">
+				<h4>Feedback</h4>
+				<p id="feedback-text"></p>
+				<button id="reset-quiz">Restart Quiz</button>
+			</div>
+		</div>
+
+		<script>
+			async function populateQuestionData() {
+				const response = await fetch("./quizdata.txt");
+				const rawData = await response.text();
+				const data = JSON.parse(JSON.parse(rawData));
+
+				if (!data || !data.questions) {
+					console.error("Invalid data format or missing data.");
+					return { quiz_title: "", questions: [] };
+				}
+
+				return {
+					quiz_title: data.quiz_title || "",
+					questions: data.questions.map((question) => {
+						if (
+							question.question_type === "graded-quiz" &&
+							question.gradedQuiz
+						) {
+							return {
+								...question,
+								gradedQuiz: {
+									...question.gradedQuiz,
+									questions: question.gradedQuiz.questions
+										? question.gradedQuiz.questions.map(
+												(gradedQuizQuestion) => ({
+													...gradedQuizQuestion,
+													options: gradedQuizQuestion.options
+														? gradedQuizQuestion.options.map((option) => ({
+																...option,
+														  }))
+														: [],
+												})
+										  )
+										: [],
+									feedbacks: question.gradedQuiz.feedbacks
+										? question.gradedQuiz.feedbacks.map((feedback) => ({
+												...feedback,
+										  }))
+										: [],
+								},
+							};
+						}
+						return question;
+					}),
+				};
+			}
+
+			async function initializeQuiz() {
+				const questionData = await populateQuestionData();
+
+				const questionContainer = document.getElementById("question-container");
+				const questionNumber = document.getElementById("question-number");
+				const optionsList = document.getElementById("options-list");
+				const feedbackContainer = document.getElementById("feedback-container");
+				const feedbackText = document.getElementById("feedback-text");
+				const resetQuizButton = document.getElementById("reset-quiz");
+
+				let currentQuestionIndex = 0;
+				let score = 0;
+
+				function displayQuestion() {
+					const question =
+						questionData.questions[0].gradedQuiz.questions[
+							currentQuestionIndex
+						];
+					questionNumber.textContent =
+						currentQuestionIndex + 1 + ". " + question.question;
+					optionsList.innerHTML = "";
+
+					question.options.forEach((option, index) => {
+						const li = document.createElement("li");
+						const button = document.createElement("button");
+						button.classList.add("option");
+						button.textContent = option.text;
+						button.addEventListener("click", () => submitAnswer(option.score));
+						li.appendChild(button);
+						optionsList.appendChild(li);
+					});
+				}
+
+				function submitAnswer(optionScore) {
+					score += optionScore;
+					currentQuestionIndex++;
+
+					if (
+						currentQuestionIndex >=
+						questionData.questions[0].gradedQuiz.questions.length
+					) {
+						calculateFeedback();
+					} else {
+						displayQuestion();
+					}
+				}
+
+				function calculateFeedback() {
+					for (const feedback of questionData.questions[0].gradedQuiz
+						.feedbacks) {
+						if (score >= feedback.minScore && score <= feedback.maxScore) {
+							feedbackText.textContent = feedback.text;
+							break;
+						}
+					}
+
+					questionContainer.style.display = "none";
+					feedbackContainer.style.display = "block";
+				}
+
+				function resetQuiz() {
+					currentQuestionIndex = 0;
+					score = 0;
+					displayQuestion();
+					feedbackContainer.style.display = "none";
+					questionContainer.style.display = "block";
+				}
+
+				displayQuestion();
+				resetQuizButton.addEventListener("click", resetQuiz);
+			}
+
+			initializeQuiz();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Personality Quiz</title>
+		<style>
+			.option {
+				/* Add your preferred button styles here */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="personality-quiz" id="personality-quiz">
+			<div id="question-container">
+				<h3 id="question-text"></h3>
+				<ul id="options-list" aria-live="polite"></ul>
+			</div>
+			<div id="result-container" style="display: none">
+				<h4>Your result</h4>
+				<p id="result-text"></p>
+				<button id="reset-quiz">Restart Quiz</button>
+			</div>
+		</div>
+
+		<script>
+			async function populateQuestionData() {
+				const response = await fetch("./quizdata.txt");
+				const rawData = await response.text();
+				const data = JSON.parse(JSON.parse(rawData));
+				return data;
+			}
+
+			async function initializeQuiz() {
+				const questionData = await populateQuestionData();
+				const personalityQuiz = questionData.questions.find(
+					(q) => q.question_type === "personality-quiz"
+				).personalityQuiz;
+
+				const questionContainer = document.getElementById("question-container");
+				const questionText = document.getElementById("question-text");
+				const optionsList = document.getElementById("options-list");
+				const resultContainer = document.getElementById("result-container");
+				const resultText = document.getElementById("result-text");
+				const resetQuizButton = document.getElementById("reset-quiz");
+
+				let currentPersonalityQuestionIndex = 0;
+				let personalityCategories = {};
+
+				function displayQuestion() {
+					const question =
+						personalityQuiz.questions[currentPersonalityQuestionIndex];
+					questionText.textContent = question.text;
+					optionsList.innerHTML = "";
+
+					question.options.forEach((option, index) => {
+						const li = document.createElement("li");
+						const button = document.createElement("button");
+						button.classList.add("option");
+						button.textContent = option.text;
+						button.addEventListener("click", () => {
+							submitPersonalityAnswer(personalityQuiz.categories[index].name);
+						});
+						li.appendChild(button);
+						optionsList.appendChild(li);
+					});
+				}
+
+				function submitPersonalityAnswer(category) {
+					if (!personalityCategories[category]) {
+						personalityCategories[category] = 0;
+					}
+					personalityCategories[category]++;
+					currentPersonalityQuestionIndex++;
+
+					if (
+						currentPersonalityQuestionIndex >= personalityQuiz.questions.length
+					) {
+						calculatePersonalityResult();
+					} else {
+						displayQuestion();
+					}
+				}
+
+				function calculatePersonalityResult() {
+					const maxScore = Math.max(...Object.values(personalityCategories));
+
+					const tiedCategories = personalityQuiz.categories.filter(
+						(category) => personalityCategories[category.name] === maxScore
+					);
+
+					resultText.textContent = tiedCategories
+						.map((category) => category.feedback)
+						.join(", ");
+
+					questionContainer.style.display = "none";
+					resultContainer.style.display = "block";
+				}
+
+				function resetQuiz() {
+					currentPersonalityQuestionIndex = 0;
+					personalityCategories = {};
+					displayQuestion();
+					resultContainer.style.display = "none";
+					questionContainer.style.display = "block";
+				}
+
+				displayQuestion();
+				resetQuizButton.addEventListener("click", resetQuiz);
+			}
+
+			initializeQuiz();
+		</script>
+	</body>
+</html>

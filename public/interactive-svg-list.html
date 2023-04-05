@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive SVG</title>
+  <style>
+    .success-message {
+      display: none;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    #title-list {
+      margin-bottom: 20px;
+    }
+
+    svg a {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  
+  </div>
+  <div>
+  <div id="svg-container">
+    <!-- Your inline SVG code goes here -->
+  </div>
+  <div id="title-list">
+  </div>
+  <div id="success-message" aria-live="polite" class="success-message">
+    Term correctly associated!
+  </div>
+  <script>
+    const anchorElements = document.querySelectorAll('#svg-container a');
+    const titleList = document.getElementById('title-list');
+    
+    anchorElements.forEach((anchor, index) => {
+      const title = anchor.getAttribute('title');
+      const radioButton = document.createElement('input');
+      radioButton.type = 'radio';
+      radioButton.name = 'svg-titles';
+      radioButton.id = `title-${index}`;
+      radioButton.value = title;
+
+      const label = document.createElement('label');
+      label.htmlFor = `title-${index}`;
+      label.innerText = title;
+
+      titleList.appendChild(radioButton);
+      titleList.appendChild(label);
+      titleList.appendChild(document.createElement('br'));
+
+      anchor.addEventListener('click', (event) => {
+        event.preventDefault();
+        const selectedTitle = document.querySelector('input[name="svg-titles"]:checked').value;
+        if (selectedTitle === title) {
+          const successMessage = document.getElementById('success-message');
+          successMessage.style.display = 'block';
+          setTimeout(() => {
+            successMessage.style.display = 'none';
+          }, 3000);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
