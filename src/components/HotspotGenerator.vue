@@ -117,6 +117,7 @@
 			ref="container"
 		>
 			<div
+				v-if="contextMenu.visible"
 				class="context-menu"
 				:style="{
 					top: contextMenu.y + 'px',
@@ -125,20 +126,12 @@
 				}"
 				@click.stop="hideContextMenu"
 			>
-				<div
-					class="context-menu-item"
-					@click="
-						selectShape($event, selectedShapeIndex);
-						showShapeProperties($event, selectedShapeIndex);
-					"
-				>
+				<div class="context-menu-item" @click="showShapeProperties()">
 					Set shape data
 				</div>
 				<div
 					class="context-menu-item"
-					@click="
-						deleteShape($event, selectedShapeIndex);
-					"
+					@click="deleteShape()"
 				>
 					Delete shape
 				</div>
@@ -157,11 +150,10 @@
 				/>
 
 				<polygon
-					@click="removeShape($event, index)"
-					@contextmenu="showContextMenu($event, index)"
+					@click.stop="removeShape($event, index)"
+					@contextmenu.prevent="showContextMenu($event, index)"
 					v-for="(shape, index) in shapes"
 					:key="index"
-					:class="polygonClass(index)"
 					:points="shape.points"
 					fill="rgba(0, 0, 255, 0.3)"
 					stroke="blue"
@@ -218,16 +210,13 @@
 			Undo
 		</button>
 		<button @click="downloadSVG" v-if="shapes.length">Download HotSpot</button>
-		<button @click="toggleDeleteMode" v-if="shapes.length || deleteMode">
-			{{ deleteMode ? "Disable" : "Enable" }} Delete Shape
-		</button>
 		<button @click="reset" v-if="points.length || shapes.length">Reset</button>
 	</div>
 	<div
 		ref="shapePropertiesModal"
 		class="modal"
 		id="shapePropertiesModal"
-		v-if="showShapePropertiesModal"
+		
 		@click.self="closeShapePropertiesModal"
 	>
 		<div class="modal-content">
@@ -588,18 +577,21 @@ export default {
 
 		closeShapePropertiesModal() {
 			// this.selectionMode = true;
+			document.getElementById("shapePropertiesModal").style.display =
+				"none";
 			this.showShapePropertiesModal = false;
 		},
 		saveShapeProperties() {
-			this.shapes[this.selectedShape.index].name = this.selectedShape.name;
-			this.shapes[this.selectedShape.index].link = this.selectedShape.link;
-			this.shapes[this.selectedShape.index].target = this.selectedShape.target;
-			this.shapes[this.selectedShape.index].linkPrefix =
+			this.shapes[this.selectedShapeIndex].name = this.selectedShape.name;
+			this.shapes[this.selectedShapeIndex].link = this.selectedShape.link;
+			this.shapes[this.selectedShapeIndex].target = this.selectedShape.target;
+			this.shapes[this.selectedShapeIndex].linkPrefix =
 				this.selectedShape.linkPrefix;
-			this.shapes[this.selectedShape.index].tooltip =
+			this.shapes[this.selectedShapeIndex].tooltip =
 				this.selectedShape.tooltip;
 
 			this.showShapePropertiesModal = false;
+			this.closeShapePropertiesModal();
 			this.selectionMode = false;
 		},
 		calculateMiddlePoint(points) {
@@ -620,16 +612,6 @@ export default {
 			return { x: xAvg, y: yAvg };
 		},
 
-		polygonClass(index) {
-			const classes = [];
-			if (this.selectionMode) {
-				classes.push("hoverable");
-			}
-			if (index === this.selectedShapeIndex) {
-				classes.push("selected");
-			}
-			return classes.join(" ");
-		},
 		reset() {
 			if (window.confirm("Are you sure you want to reset the activity?")) {
 				this.points = [];
@@ -642,7 +624,6 @@ export default {
 			}
 		},
 		showContextMenu(event, index) {
-
 			// Get the SVG coordinates
 			const { x, y } = this.getSVGCoordinates(event);
 
@@ -662,61 +643,26 @@ export default {
 		hideContextMenu() {
 			this.contextMenu.visible = false;
 		},
-		toggleDeleteMode() {
-			this.deleteMode = !this.deleteMode;
+
+		removeShape(event,index) {	},
+
+		showShapeProperties() {
+			this.selectedShape.name = this.shapes[this.selectedShapeIndex].name;
+			this.selectedShape.link = this.shapes[this.selectedShapeIndex].link || "";
+			this.selectedShape.tooltip =
+				this.shapes[this.selectedShapeIndex].tooltip || "";
+
+			// Show the modal
+			this.showShapePropertiesModal = true;
+			document.getElementById("shapePropertiesModal").style.display =
+				"block";
 		},
 
-		removeShape(event, index) {
-			event.stopPropagation();
-
-			if (this.deleteMode) {
-				this.deleteShape(index);
-			} else {
-				this.hideContextMenu();
-				this.showShapeProperties(event, index);
-			}
-		},
-
-		showShapeProperties(event, index) {
-			
-			if (this.selectedShape.index === index) {
-				// Deselect the shape if it's already selected
-				this.showShapePropertiesModal = false;
-				this.$refs.shapePropertiesModal.style.display = "none";
-				this.selectedShape.element.classList.remove("selected-shape");
-				this.selectedShape.index = -1;
-				this.selectedShape.element = null;
-			} else {
-				// Unselect the previously selected shape
-				if (this.selectedShape.element) {
-					this.selectedShape.element.classList.remove("selected-shape");
-				}
-
-				// Select the current shape
-				this.selectedShape.index = index;
-				this.selectedShape.element = event.target;
-				this.selectedShape.element.classList.add("selected-shape");
-				this.selectedShape.name = this.shapes[index].name;
-				this.selectedShape.link = this.shapes[index].link || "";
-				this.selectedShape.tooltip = this.shapes[index].tooltip || "";
-
-				// Show the modal
-				this.showShapePropertiesModal = true;
-				this.$refs.shapePropertiesModal.style.display = "block";
-			}
-		},
-
-		deleteShape(index) {
-			this.lastDeletedShape = this.shapes.splice(index, 1)[0]; // Store the deleted shape
+		deleteShape() {
+			this.lastDeletedShape = this.shapes.splice(this.selectedShapeIndex, 1)[0]; // Store the deleted shape
 			this.lastAction = "deleteShape"; // Update last action
 			this.deleteMode = false;
 			this.hideContextMenu();
-		},
-
-		hideContextMenu() {
-			if (this.showShapePropertiesModal) {
-				this.showShapePropertiesModal = false;
-			}
 		},
 
 		undo() {
