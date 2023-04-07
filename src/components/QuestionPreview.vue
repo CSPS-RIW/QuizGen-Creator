@@ -1,15 +1,5 @@
 ﻿<template>
 	<div class="preview">
-		<div class="style-selector">
-			<label for="style-set">Select a style set:</label>
-			<select id="style-set" v-model="selectedStyle">
-				<option value="formal">Formal</option>
-				<option value="colorful">Colorful</option>
-				<option value="monochrome">Monochrome</option>
-				<option value="modern">Modern</option>
-				<option value="dark">Dark</option>
-			</select>
-		</div>
 		<div :class="[styleClass, 'question-preview']">
 			<h2>Question {{ index + 1 }} Preview</h2>
 			<p>{{ question.question_text }}</p>
@@ -88,13 +78,13 @@
 			</div>
 
 			<graded-quiz
-				v-else-if="question.question_type === 'graded-quiz' && readyforchange"
+				v-else-if="question.question_type === 'graded-quiz'"
 				:question="question"
 			></graded-quiz>
 
 			<personality-quiz
 				v-else-if="
-					question.question_type === 'personality-quiz' && readyforchange
+					question.question_type === 'personality-quiz'
 				"
 				:question="question"
 			></personality-quiz>
@@ -118,11 +108,10 @@ export default {
 	props: {
 		question: Object,
 		index: Number,
-		readyforchange: Boolean,
+		styleClass:String,
 	},
 	data() {
 		return {
-			selectedStyle: "formal",
 			currentQuestionIndex: 0,
 			score: 0,
 			feedbackText: "",
@@ -132,9 +121,6 @@ export default {
 		};
 	},
 	computed: {
-		styleClass() {
-			return `question-preview-${this.selectedStyle}`;
-		},
 		displayedFillInBlanks() {
 			if (!this.question.question_text || !this.question.answer_options) {
 				return "";
@@ -160,7 +146,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .graded-quiz li {
 	list-style: none;
 }

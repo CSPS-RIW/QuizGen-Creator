@@ -104,6 +104,7 @@
 					id="image-file"
 					@change="handleImageFileInput"
 					ref="imageFile"
+					accept=".jpg,.jpeg,png,.gif,.ico,.svg,.webp,.bmp"
 				/>
 			</div>
 		</div>
@@ -129,12 +130,7 @@
 				<div class="context-menu-item" @click="showShapeProperties()">
 					Set shape data
 				</div>
-				<div
-					class="context-menu-item"
-					@click="deleteShape()"
-				>
-					Delete shape
-				</div>
+				<div class="context-menu-item" @click="deleteShape()">Delete shape</div>
 			</div>
 			<svg
 				:viewBox="`0 0 ${imageWidth} ${imageHeight}`"
@@ -173,15 +169,6 @@
 					{{ shape.name }}
 				</text>
 
-				<circle
-					v-for="(point, index) in points"
-					:key="index"
-					:cx="point.x"
-					:cy="point.y"
-					r="5"
-					:fill="index === 0 && points.length > 1 ? 'yellow' : 'red'"
-					@click.stop="handleCircleClick(index)"
-				/>
 				<polygon
 					v-if="points.length > 1"
 					:points="currentShapePoints"
@@ -196,6 +183,16 @@
 					:y2="points[points.length - 1].y"
 					stroke="white"
 					stroke-dasharray="4,2"
+				/>
+
+				<circle
+					v-for="(point, index) in points"
+					:key="index"
+					:cx="point.x"
+					:cy="point.y"
+					r="5"
+					:fill="index === 0 && points.length > 1 ? 'yellow' : 'red'"
+					@click.stop="handleCircleClick(index)"
 				/>
 			</svg>
 		</div>
@@ -216,7 +213,6 @@
 		ref="shapePropertiesModal"
 		class="modal"
 		id="shapePropertiesModal"
-		
 		@click.self="closeShapePropertiesModal"
 	>
 		<div class="modal-content">
@@ -268,6 +264,7 @@
 
 <script>
 export default {
+	emit: ["update:image"],
 	data() {
 		return {
 			contextMenu: {
@@ -438,27 +435,32 @@ export default {
 		},
 
 		addPoint(event) {
-			if (this.deleteMode || this.contextMenu.visible) return;
+    if (this.deleteMode || this.contextMenu.visible) return;
 
-			this.setContainerSize();
-			const rect = this.$refs.container.getBoundingClientRect();
-			// const x = event.clientX - rect.left;
-			// const y = event.clientY - rect.top;
-			const { x, y } = this.getSVGCoordinates(event);
+    this.setContainerSize();
+    const rect = this.$refs.container.getBoundingClientRect();
+    // const x = event.clientX - rect.left;
+    // const y = event.clientY - rect.top;
+    const { x: rawX, y: rawY } = this.getSVGCoordinates(event);
 
-			// Check if the yellow circle was clicked
-			if (
-				this.points.length > 1 &&
-				Math.sqrt(
-					Math.pow(x - this.points[0].x, 2) + Math.pow(y - this.points[0].y, 2)
-				) <= 10
-			) {
-				return;
-			}
+    // Round coordinates to the first decimal
+    const x = parseFloat(rawX.toFixed(1));
+    const y = parseFloat(rawY.toFixed(1));
 
-			this.points.push({ x, y });
-			this.lastAction = "addPoint"; // Update last action
-		},
+    // Check if the yellow circle was clicked
+    if (
+        this.points.length > 1 &&
+        Math.sqrt(
+            Math.pow(x - this.points[0].x, 2) + Math.pow(y - this.points[0].y, 2)
+        ) <= 10
+    ) {
+        return;
+    }
+
+    this.points.push({ x, y });
+    this.lastAction = "addPoint"; // Update last action
+},
+
 
 		newShape() {
 			const shapePoints = this.points
@@ -577,8 +579,7 @@ export default {
 
 		closeShapePropertiesModal() {
 			// this.selectionMode = true;
-			document.getElementById("shapePropertiesModal").style.display =
-				"none";
+			document.getElementById("shapePropertiesModal").style.display = "none";
 			this.showShapePropertiesModal = false;
 		},
 		saveShapeProperties() {
@@ -587,8 +588,7 @@ export default {
 			this.shapes[this.selectedShapeIndex].target = this.selectedShape.target;
 			this.shapes[this.selectedShapeIndex].linkPrefix =
 				this.selectedShape.linkPrefix;
-			this.shapes[this.selectedShapeIndex].tooltip =
-				this.selectedShape.tooltip;
+			this.shapes[this.selectedShapeIndex].tooltip = this.selectedShape.tooltip;
 
 			this.showShapePropertiesModal = false;
 			this.closeShapePropertiesModal();
@@ -644,7 +644,7 @@ export default {
 			this.contextMenu.visible = false;
 		},
 
-		removeShape(event,index) {	},
+		removeShape(event, index) {},
 
 		showShapeProperties() {
 			this.selectedShape.name = this.shapes[this.selectedShapeIndex].name;
@@ -654,8 +654,7 @@ export default {
 
 			// Show the modal
 			this.showShapePropertiesModal = true;
-			document.getElementById("shapePropertiesModal").style.display =
-				"block";
+			document.getElementById("shapePropertiesModal").style.display = "block";
 		},
 
 		deleteShape() {
@@ -717,12 +716,14 @@ export default {
 		imageUrl() {
 			this.clearFileInput();
 		},
-		shapes() {
-			if (this.deleteMode && this.shapes.length === 0) {
-				this.deleteMode = false;
-			}
+		shapes: {
+			deep: true,
+			handler() {
+				this.$emit("update:shapes", this.shapes);
+			},
 		},
 	},
+
 	mounted() {
 		document.addEventListener("click", this.hideContextMenu);
 	},

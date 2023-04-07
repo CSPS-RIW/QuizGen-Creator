@@ -44,17 +44,17 @@
 				<input
 					type="text"
 					v-model="option.text"
-					:placeholder="optionIndex === 0 ? 'Choose...' : 'Option'"
+					:placeholder="optionIndex === 0 ? 'Default (unselected) text' : 'Option'"
 				/>
 				<input
-					:id="'correctOption' + index + optionIndex"
+					:id="'correctOption' + questionIndex + index + optionIndex"
 					type="radio"
 					:value="optionIndex"
 					:disabled="optionIndex === 0"
 					v-model="option.correctIndex"
 					@change="markCorrect(index, optionIndex)"
 				/>
-				<label :for="'correctOption' + index + optionIndex">{{
+				<label :for="'correctOption' + questionIndex + index + optionIndex">{{
 					option.correctIndex !== null ? "Correct" : ""
 				}}</label>
 			</div>
@@ -70,6 +70,7 @@
 <script>
 export default {
 	props: {
+		questionIndex: { type: Number },
 		loadedJson: {
 			type: Object,
 			default: () => ({}),
@@ -187,9 +188,9 @@ export default {
 	},
 	mounted() {
 		if (this.loadedJson) {
-  this.populateFromJson();
+			this.populateFromJson();
 		}
-},
+	},
 };
 </script>
 

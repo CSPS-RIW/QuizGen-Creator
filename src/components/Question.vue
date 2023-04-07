@@ -2,26 +2,29 @@
 	<div class="question">
 		<div class="ActivityHeader">
 			<h2>Question {{ index + 1 }}</h2>
-			<div><label for="question-type">Question Type:</label
-			><select
-				v-model="dataQuestion.question_type"
-				@change="onQuestionTypeChange"
-			>
-				<option value="single-select">Single Select</option>
-				<option value="multiple-select">Multiple Select</option>
-				<option value="true-false">True or False</option>
-				<option value="fill-in-the-blanks">Fill in the Blank</option>
-				<option value="hotspot">Hotspot Question</option>
-				<option value="drag-and-drop">Drag And Drop</option>
-				<option value="graded-quiz">Graded Quiz</option>
-				<option value="personality-quiz">Personality Quiz</option>
-			</select></div>
+			<div>
+				<label for="question-type">Question Type:</label
+				><select
+					v-model="dataQuestion.question_type"
+					@change="onQuestionTypeChange"
+				>
+					<option value="single-select">Single Select</option>
+					<option value="multiple-select">Multiple Select</option>
+					<option value="true-false">True or False</option>
+					<option value="fill-in-the-blanks">Fill in the Blank</option>
+					<option value="hotspot">Hotspot Question</option>
+					<option value="drag-and-drop">Drag And Drop</option>
+					<option value="graded-quiz">Graded Quiz</option>
+					<option value="personality-quiz">Personality Quiz</option>
+				</select>
+			</div>
 		</div>
 
 		<!-- Single Select -->
 		<div v-if="dataQuestion.question_type === 'single-select'">
 			<label for="question-text">Question Text:</label
 			><input type="text" v-model="dataQuestion.question_text" />
+			<br />
 			<div
 				v-for="(option, qindex) in dataQuestion.answer_options"
 				:key="qindex"
@@ -35,7 +38,7 @@
 					:checked="option.isCorrect"
 					@change="updateSingleSelectCorrectAnswer(qindex)"
 				/>
-				<label :for="'isCorrect' + index + '-option' + qindex"> </label>
+				&nbsp;<label :for="'isCorrect' + index + '-option' + qindex"> </label>
 				<br />
 			</div>
 			<button class="add-option" @click.prevent="addOption">Add Option</button>
@@ -45,13 +48,14 @@
 		<div v-else-if="dataQuestion.question_type === 'multiple-select'">
 			<label for="question-text">Question Text:</label
 			><input type="text" v-model="dataQuestion.question_text" />
+			<br />
 			<div
 				v-for="(option, qindex) in dataQuestion.answer_options"
 				:key="qindex"
 			>
 				<label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
 				<input type="text" v-model="option.text" />
-				<input
+				&nbsp;<input
 					type="checkbox"
 					:name="'question' + index + '-option'"
 					v-model="option.isCorrect"
@@ -85,27 +89,22 @@
 			<FillBlanks
 				@update:question="handleFillBlanksUpdate"
 				:loadedJson="dataQuestion"
+				:questionIndex="index"
 			/>
 		</div>
 		<div v-else-if="dataQuestion.question_type === 'hotspot'">
-			<HotSpotGenerator @update:question="handleHotSpotUpdate" />
+			<HotSpotGenerator @update:shapes="handleHotSpotUpdate" />
 		</div>
 		<div v-else-if="dataQuestion.question_type === 'drag-and-drop'">
 			<drag-and-drop @update:activity="handleDragAndDropUpdate" />
 		</div>
-		<div
-			v-else-if="dataQuestion.question_type === 'graded-quiz' && readyForChange"
-		>
+		<div v-else-if="dataQuestion.question_type === 'graded-quiz'">
 			<GradedQuiz
 				@update:activity="handleGradedQuizUpdate"
 				:loadedJson="dataQuestion.gradedQuiz"
 			/>
 		</div>
-		<div
-			v-else-if="
-				dataQuestion.question_type === 'personality-quiz' && readyForChange
-			"
-		>
+		<div v-else-if="dataQuestion.question_type === 'personality-quiz'">
 			<PersonalityQuiz
 				@save-quiz="handlePersonalityQuizSubmit"
 				:loadedJson="dataQuestion.personalityQuiz"
@@ -137,7 +136,7 @@
 
 <script>
 import FillBlanks from "./FillBlanks.vue";
-import HotSpotGenerator from "./HotSpotGenerator.vue";
+import HotSpotGenerator from "./HotspotGenerator.vue";
 import GradedQuiz from "./GradedQuiz.vue";
 import DragAndDrop from "./DragAndDrop.vue";
 import PersonalityQuiz from "./PersonalityQuiz.vue";
@@ -164,7 +163,9 @@ export default {
 			this.dataQuestion.gradedQuiz = QuestionSet;
 			this.readyForChange = true;
 		},
-		handleHotSpotUpdate() {},
+		handleHotSpotUpdate(shapes) {
+			this.dataQuestion.shapes = shapes;
+		},
 		handleFillBlanksUpdate(fillBlanksData) {
 			this.dataQuestion.question_text = fillBlanksData.question_text;
 			this.dataQuestion.answer_options = fillBlanksData.answer_options.map(
@@ -209,8 +210,12 @@ export default {
 			this.dataQuestion.answer_options = [];
 			this.dataQuestion.items = [];
 			this.dataQuestion.gradedQuiz = {};
+			this.dataQuestion.shapes=[];
 
 			switch (this.dataQuestion.question_type) {
+				case "hotspot":
+				this.handleHotSpotUpdate([]);
+					break;
 				case "single-select":
 				case "multiple-select":
 					break;

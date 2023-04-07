@@ -8,20 +8,47 @@
 				Create Quiz Questions
 			</h1>
 			<details>
-  <summary>Welcome to the Quiz Question Creator!</summary>
-  <p>This user-friendly tool helps you generate engaging quizzes for your e-learning courses. The available question types include single-select, multiple-select, true/false, fill-in-the-blank, hotspot, drag-and-drop, graded quiz, and personality quiz. This variety enables you to create quizzes that cater to your specific learning objectives and target audience.</p>
-  
-  <p>To get started, simply follow these steps:</p>
-  <ol>
-    <li>Click the "?" button to open the instructions and familiarize yourself with the different question types and their uses.</li>
-    <li>Enter a name for your quiz in the text field.</li>
-    <li>Click the "Add Question" button to add a new question to your quiz. You can customize each question's type, text, answer options, and feedback as needed.</li>
-    <li>The right column displays a live preview of your questions. Review them to ensure they look as intended.</li>
-    <li>Once you've added all your questions, you'll see the "Generated Save File" in the JSON format in the right column. You can download this file by clicking the "Download Quiz Data" button.</li>
-    <li>To load a quiz from an existing JSON file, click the "Load Quiz Data" button and select the file from your device.</li>
-  </ol>
-  <p>With this tool, creating professional quizzes for your e-learning courses has never been easier. Happy quiz-making!</p>
-</details>
+				<summary>Welcome to the Quiz Question Creator!</summary>
+				<p>
+					This user-friendly tool helps you generate engaging quizzes for your
+					e-learning courses. The available question types include
+					single-select, multiple-select, true/false, fill-in-the-blank,
+					hotspot, drag-and-drop, graded quiz, and personality quiz. This
+					variety enables you to create quizzes that cater to your specific
+					learning objectives and target audience.
+				</p>
+
+				<p>To get started, simply follow these steps:</p>
+				<ol>
+					<li>
+						Click the "?" button to open the instructions and familiarize
+						yourself with the different question types and their uses.
+					</li>
+					<li>Enter a name for your quiz in the text field.</li>
+					<li>
+						Click the "Add Question" button to add a new question to your quiz.
+						You can customize each question's type, text, answer options, and
+						feedback as needed.
+					</li>
+					<li>
+						The right column displays a live preview of your questions. Review
+						them to ensure they look as intended.
+					</li>
+					<li>
+						Once you've added all your questions, you'll see the "Generated Save
+						File" in the JSON format in the right column. You can download this
+						file by clicking the "Download Quiz Data" button.
+					</li>
+					<li>
+						To load a quiz from an existing JSON file, click the "Load Quiz
+						Data" button and select the file from your device.
+					</li>
+				</ol>
+				<p>
+					With this tool, creating professional quizzes for your e-learning
+					courses has never been easier. Happy quiz-making!
+				</p>
+			</details>
 
 			<div>
 				<div
@@ -100,18 +127,9 @@
 								improvement.
 							</li>
 						</ol>
-
-						<p>
-							When creating questions for public service e-learning, ensure that
-							the content is relevant, engaging, and appropriate for the target
-							audience. Consider the learning objectives, level of difficulty,
-							and the desired outcomes when selecting question types for your
-							course.
-						</p>
 					</div>
 				</div>
 			</div>
-
 
 			<input type="text" v-model="myQuiz" />
 			<hr />
@@ -139,11 +157,22 @@
 				/>
 				<button @click="$refs.fileInput.click()">Load Quiz Data</button>
 			</div>
+			<div class="style-selector">
+				<label for="style-set">Select a style set:</label>
+				<select id="style-set" v-model="selectedStyle">
+					<option value="formal">Formal</option>
+					<option value="colorful">Colorful</option>
+					<option value="monochrome">Monochrome</option>
+					<option value="modern">Modern</option>
+					<option value="dark">Dark</option>
+				</select>
+			</div>
 			<div v-for="(question, index) in questions" :key="'preview-' + index">
 				<QuestionPreview
 					:question="question"
 					:index="index"
 					:readyforchange="readyForChange"
+					:styleClass="styleClass"
 				/>
 			</div>
 
@@ -171,9 +200,13 @@ export default {
 			myQuiz: "Quiz Name",
 			questions: [],
 			readyForChange: false,
+			selectedStyle: "formal",
 		};
 	},
 	computed: {
+		styleClass() {
+			return `question-preview-${this.selectedStyle}`;
+		},
 		quizJSON() {
 			const quizData = {
 				quiz_title: this.myQuiz,
@@ -245,6 +278,10 @@ export default {
 						question.question_type === "personality-quiz"
 							? question.personalityQuiz
 							: undefined;
+					const shapes =
+						question.question_type === "hotspot" 
+							? question.shapes
+							: undefined;
 
 					return generateQuestionObject({
 						question_type,
@@ -253,6 +290,7 @@ export default {
 						correct_answer: processedCorrectAnswer,
 						gradedQuiz,
 						personalityQuiz,
+						shapes,
 					});
 				}),
 			};
@@ -361,20 +399,20 @@ input {
 }
 
 details {
-      background-color: #f9f9f9;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      width: 80%;
-      margin: 20px auto;
-    }
-    
-    summary {
-      font-weight: bold;
-      cursor: pointer;
-      color: #333;
-      font-size: 1.2em;
-    }
+	background-color: #f9f9f9;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 10px;
+	width: 80%;
+	margin: 20px auto;
+}
+
+summary {
+	font-weight: bold;
+	cursor: pointer;
+	color: #333;
+	font-size: 1.2em;
+}
 
 .container {
 	display: flex;

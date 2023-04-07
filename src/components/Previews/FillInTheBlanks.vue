@@ -14,6 +14,7 @@
               :key="optionIndex"
               :value="optionIndex"
               :disabled="optionIndex==0"
+              :selected="optionIndex==0"
             >
               {{ option }}
             </option>

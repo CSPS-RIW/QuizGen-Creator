@@ -1,6 +1,6 @@
 ﻿<template>
     <div class="personality-quiz">
-      <div v-if="question && question.personalityQuiz.questions && currentPersonalityQuestionIndex < question.personalityQuiz.questions.length">
+      <div v-if="question?.personalityQuiz?.questions && currentPersonalityQuestionIndex < question.personalityQuiz.questions.length">
         <h3>{{ question.personalityQuiz.questions[currentPersonalityQuestionIndex].text }}</h3>
         <ul aria-live="polite">
           <li

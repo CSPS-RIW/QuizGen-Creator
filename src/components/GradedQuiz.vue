@@ -1,13 +1,84 @@
 ﻿<template>
 	<div>
-		<h2>Create Graded Quiz</h2>
+		<h2>
+			<button class="question-mark-icon" @click="openModal" tabindex="0">
+				&#x3F;
+			</button>
+			Create Graded Quiz
+		</h2>
+		<div
+			id="GradedinstructionsModal"
+			class="modal"
+			@click="closeModalOnClickOutside"
+			ref="modalBackdrop"
+		>
+			<div
+				class="modal-content"
+				@keydown.esc="closeModal"
+				tabindex="-1"
+				ref="modalContent"
+			>
+				<button class="close" @click="closeModal" tabindex="0">&times;</button>
+				<h2>Create a Graded Quiz</h2>
+				<p>Follow these instructions to create a graded quiz:</p>
+				<ol>
+					<li>
+						Click the "Add Question" button to add a new question to your quiz.
+						You can add multiple questions this way.
+					</li>
+					<li>
+						For each question, enter the question text in the input field
+						labeled "Question".
+					</li>
+					<li>
+						Below each question, you'll see the "Options" section. Each question
+						starts with two options. You can add more by clicking the "Add
+						Option" button.
+					</li>
+					<li>
+						For each option, enter the option text in the input field labeled
+						"Option".
+					</li>
+					<li>
+						Assign a score to each option by entering a number in the input
+						field labeled "Score".
+					</li>
+					<li>
+						To remove an option, click the red "Remove option" button next to
+						the option. Note that you cannot remove the first option.
+					</li>
+					<li>
+						After setting up your questions and options, scroll down to the
+						"Feedbacks" section.
+					</li>
+					<li>
+						Feedbacks are automatically generated based on the score ranges. You
+						can add or remove feedbacks by clicking the "Add Feedback" or
+						"Remove" buttons, respectively.
+					</li>
+					<li>
+						For each feedback, enter the feedback text in the textarea provided.
+					</li>
+					<li>
+						Once you have set up your questions, options, and feedbacks, click
+						the "Save Quiz" button to save your quiz.
+					</li>
+				</ol>
+				<p>Your quiz is now ready to be used!</p>
+			</div>
+		</div>
 		<div v-for="(question, qIndex) in questions" :key="qIndex">
 			<label>Question {{ qIndex + 1 }}:</label>
 			<input v-model="question.question" />
 			<h3>Options:</h3>
 			<div v-for="(option, oIndex) in question.options" :key="oIndex">
-                <button title="Remove option"
-					class="remove-button" v-if="oIndex!=0" @click="removeOption(qIndex, oIndex)"><svg
+				<button
+					title="Remove option"
+					class="remove-button"
+					v-if="oIndex != 0"
+					@click="removeOption(qIndex, oIndex)"
+				>
+					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"
 						height="20"
@@ -28,8 +99,15 @@
 								fill="#E51212"
 							/>
 						</g>
-					</svg></button>
-                    <button class="remove-button" disabled title="Can't remove the first option" v-else><svg
+					</svg>
+				</button>
+				<button
+					class="remove-button"
+					disabled
+					title="Can't remove the first option"
+					v-else
+				>
+					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"
 						height="20"
@@ -50,8 +128,9 @@
 								fill="#ccc"
 							/>
 						</g>
-					</svg></button>
-                <label>Option {{ oIndex + 1 }}:</label>
+					</svg>
+				</button>
+				<label>Option {{ oIndex + 1 }}:</label>
 				<input v-model="option.text" />
 				<label>Score:</label>
 				<input type="number" v-model.number="option.score" />
@@ -69,7 +148,7 @@
 				feedback.text
 			}}</textarea>
 
-			<button v-if="index!=0" @click="removeFeedback(index)">Remove</button>
+			<button v-if="index != 0" @click="removeFeedback(index)">Remove</button>
 		</div>
 		<button @click="addFeedback">Add Feedback</button>
 
@@ -78,7 +157,7 @@
 </template>
 <script>
 export default {
-    props: ["loadedJson"],
+	props: ["loadedJson"],
 	data() {
 		return {
 			questions: [
@@ -194,12 +273,23 @@ export default {
 				this.updateBalancedFeedbacks();
 			}
 		},
-        populateFromJson() {
+		populateFromJson() {
 			if (this.loadedJson.questions && this.loadedJson.feedbacks) {
-
 				this.questions = this.loadedJson.questions;
 				this.feedbacks = this.loadedJson.feedbacks;
 			}
+		},
+		openModal() {
+			document.getElementById("GradedinstructionsModal").style.display = "block";
+			this.$refs.modalContent.focus();
+		},
+		closeModalOnClickOutside(event) {
+			if (event.target === this.$refs.modalBackdrop) {
+				this.closeModal();
+			}
+		},
+		closeModal() {
+			document.getElementById("GradedinstructionsModal").style.display = "none";
 		},
 	},
 	computed: {
@@ -249,14 +339,14 @@ export default {
 	},
 	watch: {
 		loadedJson: {
-	  deep: true,
-	  handler(newData) {
-		if (newData) {
-		  this.feedbacks = newData.feedbacks;
-		  this.questions = newData.questions;
-		}
-	  },
-	},
+			deep: true,
+			handler(newData) {
+				if (newData) {
+					this.feedbacks = newData.feedbacks;
+					this.questions = newData.questions;
+				}
+			},
+		},
 		"feedbacks.length"() {
 			this.updateBalancedFeedbacks();
 		},
@@ -267,10 +357,10 @@ export default {
 			immediate: true,
 		},
 	},
-    mounted() {
+	mounted() {
 		if (this.loadedJson) {
-  this.populateFromJson();
+			this.populateFromJson();
 		}
-},
+	},
 };
 </script>

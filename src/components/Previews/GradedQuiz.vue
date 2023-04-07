@@ -2,8 +2,7 @@
 	<div class="graded-quiz">
 		<div
 			v-if="
-				question &&
-				question.gradedQuiz &&
+				question?.gradedQuiz?.questions &&
 				currentQuestionIndex < question.gradedQuiz.questions.length
 			"
 		>
