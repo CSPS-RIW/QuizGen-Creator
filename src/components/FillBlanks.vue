@@ -41,12 +41,16 @@
 						</g>
 					</svg>
 				</button>
-				<input type="text" v-model="option.text" placeholder="Option" />
-
+				<input
+					type="text"
+					v-model="option.text"
+					:placeholder="optionIndex === 0 ? 'Choose...' : 'Option'"
+				/>
 				<input
 					:id="'correctOption' + index + optionIndex"
 					type="radio"
 					:value="optionIndex"
+					:disabled="optionIndex === 0"
 					v-model="option.correctIndex"
 					@change="markCorrect(index, optionIndex)"
 				/>
@@ -150,8 +154,8 @@ export default {
 			const newOption = { text: "", correctIndex: null };
 			this.blanksOptions[index].push(newOption);
 			if (this.blanksOptions[index].length === 2) {
-				// Set the first option's correctIndex to 0
-				this.blanksOptions[index][0].correctIndex = 0;
+				// Set the second option's correctIndex to 1
+				this.blanksOptions[index][1].correctIndex = 1;
 			}
 		},
 		removeOption(index, optionIndex) {

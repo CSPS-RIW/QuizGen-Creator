@@ -64,8 +64,8 @@
 				</div>
 			</div>
 			<div v-else-if="question.question_type === 'fill-in-the-blanks'">
-				<div class="question-preview" v-html="displayedFillInBlanks"></div>
-			</div>
+    <fill-in-the-blanks :question="question" />
+  </div>
 			<div v-else-if="question.question_type === 'hotspot'">
 				<p>Hotspot questions are not supported in this preview.</p>
 			</div>
@@ -107,10 +107,13 @@
 <script>
 import GradedQuiz from "./Previews/GradedQuiz.vue";
 import PersonalityQuiz from "./Previews/PersonalityQuiz.vue";
+import FillInTheBlanks from "./Previews/FillInTheBlanks.vue";
 export default {
 	components: {
 		GradedQuiz,
 		PersonalityQuiz,
+		FillInTheBlanks,
+		
 	},
 	props: {
 		question: Object,
@@ -196,7 +199,7 @@ input[type="radio"]:checked + label:before {
 }
 
 input[type="radio"]:disabled + label:before {
-	opacity: 1;
+	opacity: .3;
 }
 
 .question-preview {
