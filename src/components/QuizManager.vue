@@ -8,7 +8,7 @@
 				Create Quiz Questions
 			</h1>
 			<details>
-				<summary>Welcome to the Quiz Question Creator!</summary>
+				<summary class="intro">Welcome to the Quiz Question Creator!</summary>
 				<p>
 					This user-friendly tool helps you generate engaging quizzes for your
 					e-learning courses. The available question types include
@@ -132,6 +132,50 @@
 			</div>
 
 			<input type="text" v-model="myQuiz" />
+			<details>
+				<summary>Quiz Options</summary>
+				<div>
+					<label for="randomize-questions">Randomize questions</label>
+					<input
+						type="checkbox"
+						id="randomize-questions"
+						v-model="randomizeQuestions"
+					/>
+				</div>
+				<div>
+					<label for="calculate-quiz-score">Calculate quiz score</label>
+					<input
+						type="checkbox"
+						id="calculate-quiz-score"
+						v-model="calculateQuizScore"
+					/>
+				</div>
+				<div v-if="calculateQuizScore">
+					<label for="passing-grade">Passing grade</label>
+					<input
+						type="number"
+						id="passing-grade"
+						v-model="passingGrade"
+						min="0"
+						max="100"
+						step="1"
+					/>
+				</div>
+				<div>
+					<label for="prevent-changing-answers"
+						>Prevent changing answers after submit</label
+					>
+					<input
+						type="checkbox"
+						id="prevent-changing-answers"
+						v-model="preventChangingAnswers"
+					/>
+				</div>
+				<div>
+					<label for="feedback-recap">Feedback recap at the end</label>
+					<input type="checkbox" id="feedback-recap" v-model="feedbackRecap" />
+				</div>
+			</details>
 			<hr />
 			<div>
 				<Question
@@ -201,6 +245,11 @@ export default {
 			questions: [],
 			readyForChange: false,
 			selectedStyle: "formal",
+			randomizeQuestions: false,
+			calculateQuizScore: false,
+			passingGrade: 0,
+			preventChangingAnswers: false,
+			feedbackRecap: false,
 		};
 	},
 	computed: {
@@ -210,6 +259,11 @@ export default {
 		quizJSON() {
 			const quizData = {
 				quiz_title: this.myQuiz,
+				randomize_questions: this.randomizeQuestions,
+				calculate_quiz_score: this.calculateQuizScore,
+				passing_grade: this.passingGrade,
+				prevent_changing_answers: this.preventChangingAnswers,
+				feedback_recap: this.feedbackRecap,
 				questions: this.questions.map((question) => {
 					const {
 						question_type,
@@ -279,9 +333,7 @@ export default {
 							? question.personalityQuiz
 							: undefined;
 					const shapes =
-						question.question_type === "hotspot" 
-							? question.shapes
-							: undefined;
+						question.question_type === "hotspot" ? question.shapes : undefined;
 
 					return generateQuestionObject({
 						question_type,
@@ -407,7 +459,7 @@ details {
 	margin: 20px auto;
 }
 
-summary {
+summary.intro {
 	font-weight: bold;
 	cursor: pointer;
 	color: #333;
