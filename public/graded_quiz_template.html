@@ -3,25 +3,52 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/thirdpartylib/bootstrap-4.3.1/css/bootstrap.min.css">
+
+        <!-- Font Awesome CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+        <!-- Template CSS -->
+        <link rel="stylesheet" href="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/css/styles.min.css">
+        <link rel="stylesheet" href="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/css/custom.css">
+
 		<title>Graded Quiz</title>
-		<style>
-			.option {
-				/* Add your preferred button styles here */
-			}
-		</style>
+
+		<!-- QuizGen CSS -->
+		<link rel="stylesheet" href="quizgen.css">
 	</head>
 	<body>
-		<div class="graded-quiz">
-			<div id="question-container">
-				<h3 id="question-number"></h3>
-				<ul id="options-list" aria-live="polite"></ul>
-			</div>
-			<div id="feedback-container" style="display: none">
-				<h4>Feedback</h4>
-				<p id="feedback-text"></p>
-				<button id="reset-quiz">Restart Quiz</button>
+		<div class="container-fluid data">
+            <div class="row">
+                <div class="col-12 offset-md-1 col-md-10 offset-lg-2 col-lg-8">
+					<h1>Quiz</h1>
+					<fieldset class="graded-quiz light">
+						<div id="question-container">
+							<legend id="question-number"></legend>
+							<ul id="options-list" aria-live="polite"></ul>
+						</div>
+						<div id="feedback-container" style="display: none">
+							<h2>Feedback</h2>
+							<p id="feedback-text"></p>
+							<button id="reset-quiz">Restart Quiz</button>
+						</div>
+					</fieldset>
+				</div>
 			</div>
 		</div>
+
+		<p>
+            <script src="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/thirdpartylib/jquery/jquery-3.4.1.min.js"></script>
+            <script src="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/thirdpartylib/popper-js/popper.min.js"></script>
+            <script src="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/thirdpartylib/bootstrap-4.3.1/js/bootstrap.min.js"></script>
+        </p>
+
+        <!-- Template JavaScript -->
+        <p>
+            <script src="https://app.csps-efpc.gc.ca/shared/LCS_HTML_Templates/CSPS_Template_2021/_assets/js/scripts.min.js"></script>
+        </p>
 
 		<script>
 			async function populateQuestionData() {
