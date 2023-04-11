@@ -221,8 +221,8 @@ export default {
 					break;
 				case "true-false":
 					this.dataQuestion.answer_options = [
-						{ text: "True", value: "true" },
-						{ text: "False", value: "false" },
+						{ text: "True", value: "isTrue" },
+						{ text: "False", value: "isFalse" },
 					];
 					this.dataQuestion.correct_answer = null;
 					break;

@@ -245,11 +245,11 @@ export default {
 			questions: [],
 			readyForChange: false,
 			selectedStyle: "formal",
-			randomizeQuestions: false,
+			randomizeQuestions: true,
 			calculateQuizScore: false,
 			passingGrade: 0,
 			preventChangingAnswers: false,
-			feedbackRecap: false,
+			feedbackRecap: true,
 		};
 	},
 	computed: {
@@ -406,12 +406,12 @@ export default {
 				answer_options: [
 					{
 						text: "",
-						value: "true",
+						value: "isTrue",
 						isCorrect: false,
 					},
 					{
 						text: "",
-						value: "false",
+						value: "isFalse",
 						isCorrect: false,
 					},
 				],
