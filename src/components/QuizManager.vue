@@ -318,9 +318,7 @@ export default {
 									.map((option, index) => (option.isCorrect ? index : -1))
 									.filter((index) => index !== -1)
 							: question_type === "true-false"
-							? answer_options.findIndex(
-									(option) => option.value === question.correct_answer
-							  )
+							? answer_options.findIndex((option) => option.isCorrect)
 							: question_type === "fill-in-the-blanks"
 							? answer_options.map((option) => option.correctIndex)
 							: undefined;

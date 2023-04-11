@@ -78,7 +78,7 @@
 					type="radio"
 					:id="'question' + index + '-option' + qindex"
 					:name="'question' + index + '-option'"
-					v-model="dataQuestion.correct_answer"
+					@change="updateSingleSelectCorrectAnswer(qindex)"
 					:value="option.value"
 				/>
 				<label :for="'question' + index + '-option' + qindex">Correct</label>
