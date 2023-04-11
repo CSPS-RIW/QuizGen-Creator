@@ -46,7 +46,7 @@
 						:name="'preview-question' + index + '-option'"
 						:id="'preview-question' + index + '-option' + optionIndex"
 						disabled
-						:checked="option.value === question.correct_answer"
+						:checked="option.isCorrect"
 					/>
 					<label :for="'preview-question' + index + '-option' + optionIndex">
 						{{ option.text }}

@@ -80,6 +80,7 @@
 					:name="'question' + index + '-option'"
 					@change="updateSingleSelectCorrectAnswer(qindex)"
 					:value="option.value"
+					:checked="option.isCorrect"
 				/>
 				<label :for="'question' + index + '-option' + qindex">Correct</label>
 				<br />
