@@ -22,9 +22,14 @@
 
 		<!-- Single Select -->
 		<div v-if="dataQuestion.question_type === 'single-select'">
-			<label for="question-text">Question Text:</label
+			<div>
+			<label for="question-text">Question Text: </label
 			><input type="text" v-model="dataQuestion.question_text" />
-			<br />
+		</div>
+		<div>
+			<label for="question-instructions">Answer Instructions: </label
+			><input type="text" v-model="dataQuestion.instructions" />
+		</div>
 			<div
 				v-for="(option, qindex) in dataQuestion.answer_options"
 				:key="qindex"
@@ -48,7 +53,10 @@
 		<div v-else-if="dataQuestion.question_type === 'multiple-select'">
 			<label for="question-text">Question Text:</label
 			><input type="text" v-model="dataQuestion.question_text" />
-			<br />
+			<div>
+			<label for="question-instructions">Answer Instructions: </label
+			><input type="text" v-model="dataQuestion.instructions" />
+		</div>
 			<div
 				v-for="(option, qindex) in dataQuestion.answer_options"
 				:key="qindex"
@@ -68,6 +76,10 @@
 		<div v-else-if="dataQuestion.question_type === 'true-false'">
 			<label for="question-text">Question Text:</label
 			><input type="text" v-model="dataQuestion.question_text" />
+			<div>
+			<label for="question-instructions">Answer Instructions: </label
+			><input type="text" v-model="dataQuestion.instructions" />
+		</div>
 			<div
 				v-for="(option, qindex) in dataQuestion.answer_options"
 				:key="qindex"
@@ -87,6 +99,10 @@
 			</div>
 		</div>
 		<div v-else-if="dataQuestion.question_type === 'fill-in-the-blanks'">
+			<div>
+			<label for="question-instructions">Answer Instructions: </label
+			><input type="text" v-model="dataQuestion.instructions" />
+		</div>
 			<FillBlanks
 				@update:question="handleFillBlanksUpdate"
 				:loadedJson="dataQuestion"
@@ -97,6 +113,10 @@
 			<HotSpotGenerator @update:shapes="handleHotSpotUpdate" />
 		</div>
 		<div v-else-if="dataQuestion.question_type === 'drag-and-drop'">
+			<div>
+			<label for="question-instructions">Answer Instructions: </label
+			><input type="text" v-model="dataQuestion.instructions" />
+		</div>
 			<drag-and-drop @update:activity="handleDragAndDropUpdate" />
 		</div>
 		<div v-else-if="dataQuestion.question_type === 'graded-quiz'">
@@ -208,6 +228,7 @@ export default {
 		onQuestionTypeChange() {
 			this.readyForChange = false;
 			this.dataQuestion.question_text = "";
+			this.dataQuestion.instructions = "";
 			this.dataQuestion.answer_options = [];
 			this.dataQuestion.items = [];
 			this.dataQuestion.gradedQuiz = {};

@@ -134,6 +134,25 @@
 			<input type="text" v-model="myQuiz" />
 			<details>
 				<summary>Quiz Options</summary>
+
+				<div>
+					<label for="allow-language-switching">Allow language switching</label>
+					<input
+						type="checkbox"
+						id="allow-language-switching"
+						v-model="allowLanguageSwitching"
+					/>
+				</div>
+				<div>
+					<label for="display-individual-otpion-feedback"
+						>Display individual option feedback</label
+					>
+					<input
+						type="checkbox"
+						id="display-individual-otpion-feedback"
+						v-model="displayIndividualOptionFeedback"
+					/>
+				</div>
 				<div>
 					<label for="randomize-questions">Randomize questions</label>
 					<input
@@ -170,9 +189,18 @@
 						id="prevent-changing-answers"
 						v-model="preventChangingAnswers"
 					/>
+				</div>				<div>
+					<label for="end-quiz-button"
+						>End quiz button when all questions are answered</label
+					>
+					<input
+						type="checkbox"
+						id="end-quiz-button"
+						v-model="endQuizButton"
+					/>
 				</div>
 				<div>
-					<label for="feedback-recap">Feedback recap at the end</label>
+					<label for="feedback-recap">Feedback on submit</label>
 					<input type="checkbox" id="feedback-recap" v-model="feedbackRecap" />
 				</div>
 			</details>
@@ -249,6 +277,9 @@ export default {
 			calculateQuizScore: false,
 			passingGrade: 0,
 			preventChangingAnswers: false,
+			allowLanguageSwitching: true,
+			displayIndividualOptionFeedback: true,
+			endQuizButton: false,
 			feedbackRecap: true,
 		};
 	},
@@ -262,12 +293,16 @@ export default {
 				randomize_questions: this.randomizeQuestions,
 				calculate_quiz_score: this.calculateQuizScore,
 				passing_grade: this.passingGrade,
+				allowLanguageSwitching: this.allowLanguageSwitching,
+				displayIndividualOptionFeedback: this.displayIndividualOptionFeedback,
 				prevent_changing_answers: this.preventChangingAnswers,
+				end_quiz_button: this.endQuizButton,
 				feedback_recap: this.feedbackRecap,
 				questions: this.questions.map((question) => {
 					const {
 						question_type,
 						question_text,
+						instructions,
 						answer_options,
 						items,
 						generic_feedback,
@@ -336,6 +371,7 @@ export default {
 					return generateQuestionObject({
 						question_type,
 						question_text,
+						instructions,
 						answer_options: processedAnswerOptions,
 						correct_answer: processedCorrectAnswer,
 						gradedQuiz,
