@@ -117,7 +117,8 @@
 			<label for="question-instructions">Answer Instructions: </label
 			><input type="text" v-model="dataQuestion.instructions" />
 		</div>
-			<drag-and-drop @update:activity="handleDragAndDropUpdate" />
+			<drag-and-drop @update:activity="handleDragAndDropUpdate" 
+			:loadedJson="dataQuestion"/>
 		</div>
 		<div v-else-if="dataQuestion.question_type === 'graded-quiz'">
 			<GradedQuiz

@@ -131,7 +131,6 @@
 				</div>
 			</div>
 
-			
 			<details>
 				<summary>Quiz Options</summary>
 
@@ -189,25 +188,23 @@
 						id="prevent-changing-answers"
 						v-model="preventChangingAnswers"
 					/>
-				</div>				<div>
+				</div>
+				<div>
 					<label for="end-quiz-button"
 						>End quiz button when all questions are answered</label
 					>
-					<input
-						type="checkbox"
-						id="end-quiz-button"
-						v-model="endQuizButton"
-					/>
+					<input type="checkbox" id="end-quiz-button" v-model="endQuizButton" />
 				</div>
 				<div>
 					<label for="feedback-recap">Feedback on submit</label>
 					<input type="checkbox" id="feedback-recap" v-model="feedbackRecap" />
 				</div>
 			</details>
-			<input type="text" v-model="myQuiz" placeholder="Quiz Name (optional)"/>
-			Quiz Language: <select v-model="quizLanguage">
-				<Option value="en" selected>English</Option>
-				<Option value="fr">French</Option>
+			<input type="text" v-model="myQuiz" placeholder="Quiz Name (optional)" />
+			Quiz Language:
+			<select v-model="quizLanguage">
+				<option value="en" selected>English</option>
+				<option value="fr">French</option>
 			</select>
 			<hr />
 			<div>
@@ -423,8 +420,12 @@ export default {
 					const jsonData = JSON.parse(jsonDataString); // Second parse to get the actual JSON object
 
 					if (jsonData && jsonData.questions) {
-						this.questions = [];
-						this.questions = jsonData.questions;
+						this.questions = jsonData.questions.map((question) => {
+							if (question.question_type === "drag-and-drop") {
+								question.items = question.answer_options;
+							}
+							return question;
+						});
 						this.myQuiz = jsonData.quiz_title;
 					} else {
 						alert("Invalid JSON data");
@@ -466,7 +467,7 @@ export default {
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = url;
-			link.download = "QuizData_"+this.quizLanguage+".txt";
+			link.download = "QuizData_" + this.quizLanguage + ".txt";
 			link.click();
 			URL.revokeObjectURL(url);
 		},
