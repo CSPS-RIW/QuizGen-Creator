@@ -131,7 +131,7 @@
 				</div>
 			</div>
 
-			<input type="text" v-model="myQuiz" />
+			
 			<details>
 				<summary>Quiz Options</summary>
 
@@ -204,6 +204,11 @@
 					<input type="checkbox" id="feedback-recap" v-model="feedbackRecap" />
 				</div>
 			</details>
+			<input type="text" v-model="myQuiz" placeholder="Quiz Name (optional)"/>
+			Quiz Language: <select v-model="quizLanguage">
+				<Option value="en" selected>English</Option>
+				<Option value="fr">French</Option>
+			</select>
 			<hr />
 			<div>
 				<Question
@@ -281,6 +286,7 @@ export default {
 			displayIndividualOptionFeedback: true,
 			endQuizButton: false,
 			feedbackRecap: true,
+			quizLanguage: "en",
 		};
 	},
 	computed: {
@@ -460,7 +466,7 @@ export default {
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = url;
-			link.download = "QuizData.txt";
+			link.download = "QuizData_"+this.quizLanguage+".txt";
 			link.click();
 			URL.revokeObjectURL(url);
 		},
