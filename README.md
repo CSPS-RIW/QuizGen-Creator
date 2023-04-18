@@ -20,7 +20,7 @@ Quiz Builder is a powerful, flexible, and easy-to-use quiz creation tool. It all
 Clone this repository and install the necessary dependencies:
 
 ```
-git clone https://github.com/csabourin/QuizGen-Creator/
+git clone https://github.com/csabourin/QuizGen-Creator.git
 cd quiz-builder
 npm install
 ```
