@@ -1,6 +1,6 @@
-# Quiz Builder
+# Quizgen Creator
 
-Quiz Builder is a powerful, flexible, and easy-to-use quiz creation tool. It allows you to create quizzes with various question types, including single select, multiple select, true-false, fill-in-the-blanks, and drag-and-drop. The user-friendly interface enables you to manage your quizzes effortlessly and efficiently.
+Quizgen Creator is a powerful, flexible, and easy-to-use quiz creation tool. It allows you to create quizzes with various question types, including single select, multiple select, true-false, fill-in-the-blanks, and drag-and-drop. The user-friendly interface enables you to manage your quizzes effortlessly and efficiently.
 
 ## Features
 
