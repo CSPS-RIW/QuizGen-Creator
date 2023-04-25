@@ -431,6 +431,15 @@ export default {
               return question;
             });
             this.myQuiz = jsonData.quiz_title;
+            // Update the boolean values
+            this.randomizeQuestions = jsonData.randomize_questions;
+            this.calculateQuizScore = jsonData.calculate_quiz_score;
+            this.allowLanguageSwitching = jsonData.allowLanguageSwitching;
+            this.displayIndividualOptionFeedback =
+              jsonData.displayIndividualOptionFeedback;
+            this.preventChangingAnswers = jsonData.prevent_changing_answers;
+            this.endQuizButton = jsonData.end_quiz_button;
+            this.feedbackRecap = jsonData.feedback_recap;
           } else {
             alert("Invalid JSON data");
           }
