@@ -1,0 +1,14 @@
+{
+  "title": "Mettez en évidence les phrases incorrectes",
+  "loadingText": "Chargement des phrases...",
+  "sentence": "Phrase {index} : {text}",
+  "verifyButton": "Vérifier",
+  "selected": " est sélectionnée.",
+  "correctFeedback": "Correct ! Vous avez mis en évidence les bonnes phrases.",
+  "incorrectFeedback": "Incorrect. Veuillez réessayer.",
+  "noSelectionFeedback": "Veuillez sélectionner au moins une phrase.",
+  "inputTitle": "Entrez le texte :",
+  "downloadButton": "Télécharger le fichier",
+  "clickToSelect": "Cliquez sur les phrases ci-dessous pour les sélectionner :",
+  "selectedSentences": "Phrases sélectionnées :"
+}

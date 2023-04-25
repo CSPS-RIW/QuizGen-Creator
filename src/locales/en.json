@@ -1,0 +1,15 @@
+{
+"title": "Highlight the False Sentences",
+"loadingText": "Loading sentences...",
+"sentence": "Sentence {index}: {text}",
+"verifyButton": "Verify",
+"selected": " is selected.",
+"correctFeedback": "Correct! You've highlighted the right sentences.",
+"incorrectFeedback": "Incorrect. Please try again.",
+"genericFeedback":"Generic Feedback",
+"noSelectionFeedback": "Please select at least one sentence.",
+"inputTitle": "Input text:",
+"downloadButton": "Download File",
+"clickToSelect": "Click on the sentences below to select them:",
+"selectedSentences": "Selected sentences:"
+}
