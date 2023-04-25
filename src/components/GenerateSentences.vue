@@ -20,16 +20,19 @@ export default {
   props: ["loadedJson"],
   data() {
     return {
-      text: "",
+      text: this.loadedJson.question_text || "",
       sentences: [],
-      correctIndices: [],
+      correctIndices: this.loadedJson.correct_answer || [],
+      loadingFromJson: false,
     };
   },
   methods: {
     processText() {
+      // if (this.loadingFromJson) return;
+
       this.sentences = this.text
         .replace(/\n+/g, " ")
-        .split(/(?<=[.!?])\s+/) // Split the text using a regex that matches spaces following a period, exclamation point, or question mark
+        .split(/(?<=[.!?])\s+/)
         .filter((s) => s)
         .map((s) => ({ text: s.trim() + "" }));
     },
@@ -44,30 +47,13 @@ export default {
         this.correctIndices.push(index);
       }
     },
-    downloadFile() {
-      const fileContent = {
-        text: this.sentences.map((s) => s.text).join(" "),
-        "correct-indices": this.correctIndices,
-      };
-      const jsonString = JSON.stringify(fileContent);
-      const doubleEncodedJson = JSON.stringify(jsonString);
-
-      const blob = new Blob([doubleEncodedJson], {
-        type: "text/plain;charset=utf-8",
-      });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `sentences_${this.$i18n.locale}.json`;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    },
   },
   watch: {
     correctIndices: {
       handler(newVal, oldVal) {
         this.$emit("update:activity", {
           text: this.text,
-          "correct_answer": this.correctIndices,
+          correct_answer: this.correctIndices,
         });
       },
       deep: true,
@@ -76,9 +62,13 @@ export default {
     loadedJson: {
       handler(newVal, oldVal) {
         if (newVal) {
+          this.loadingFromJson = true;
+
           this.text = newVal.question_text;
           this.correctIndices = newVal.correct_answer;
           this.processText();
+
+          this.loadingFromJson = false;
         }
       },
       deep: true,
@@ -90,8 +80,8 @@ export default {
 
 <style>
 .highlighted {
-  background-color: yellow;
-  outline: 1px solid black;
+  background-color: rgb(255, 255, 220);
+  outline: 1px dashed black;
 }
 textarea.inputTitle {
   width: 100%;
