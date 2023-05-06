@@ -5,7 +5,11 @@
       <router-link to="/glossary-editor">Glossary Editor</router-link>
       <router-link to="/hotspot-generator">Hotspot Generator</router-link>
     </nav>
-    <keep-alive><router-view :key="$route.path"/></keep-alive>
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </div>
 </template>
 

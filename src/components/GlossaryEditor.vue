@@ -100,6 +100,7 @@
 </template>
 
 <script>
+import Papa from "papaparse";
 export default {
   name: "GlossaryEditor",
   data() {
@@ -154,7 +155,7 @@ export default {
     },
     async loadCsvFile(file) {
       const reader = new FileReader();
-      reader.readAsText(file);
+      reader.readAsText(file, "UTF-8");
 
       return new Promise((resolve) => {
         reader.onload = () => {
@@ -163,15 +164,15 @@ export default {
         };
       });
     },
-    parseCsv(csv) {
-      const [headerLine, ...lines] = csv.split("\n");
-      const headers = headerLine.split(",");
-      return lines.map((line) => {
-        const values = line.split(",");
-        return headers.reduce((acc, header, index) => {
-          acc[header] = values[index];
-          return acc;
-        }, {});
+    async loadCsvFile(file) {
+      return new Promise((resolve) => {
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            resolve(results.data);
+          },
+        });
       });
     },
     saveGlossary() {
@@ -191,8 +192,11 @@ export default {
       URL.revokeObjectURL(downloadUrl);
     },
     sortGlossary(glossary) {
-      return glossary.sort((a, b) => a.term.localeCompare(b.term));
+      return glossary.sort((a, b) =>
+        (a.term || "").localeCompare(b.term || "")
+      );
     },
+
     addTerm() {
       this.glossary.push({ term: "", definition: "" });
     },
