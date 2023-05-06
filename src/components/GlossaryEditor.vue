@@ -278,6 +278,7 @@ export default {
   padding: 0.5rem;
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
   border: 1px solid #ccc;
+  resize: vertical;
 }
 
 .glossary-generator textarea {
@@ -291,6 +292,7 @@ export default {
   cursor: pointer;
   font-size: 1.5rem;
   color: #c0392b;
+  box-shadow: none;
   padding: 0;
   margin: 0;
 }

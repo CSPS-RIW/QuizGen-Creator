@@ -652,7 +652,7 @@ input[type="radio"]:checked + label:before {
 
 textarea {
   width: 100%;
-  height: 2.5rem;
+  min-height: 2.5rem;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
