@@ -3,7 +3,8 @@ import App from "./App.vue";
 import { createI18n } from "vue-i18n";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
-import { createPinia } from 'pinia'
+import { createPinia } from 'pinia';
+import router from './router';
 
 const language = document.documentElement.lang;
 const messages = {
@@ -18,5 +19,6 @@ const i18n = createI18n({
 
 const app = createApp(App);
 app.use(createPinia())
+app.use(router);
 app.use(i18n);
 app.mount("#app");

@@ -1,4 +1,5 @@
 ﻿<template>
+  <keep-alive>
   <div class="container">
     <div class="left-column">
       <h1>
@@ -259,12 +260,14 @@
       </div>
     </div>
   </div>
+</keep-alive>
 </template>
 
 <script>
 import Question from "./Question.vue";
 import QuestionPreview from "./QuestionPreview.vue";
 export default {
+  name: "QuizManager",
   components: {
     Question,
     QuestionPreview,

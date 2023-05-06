@@ -12,7 +12,6 @@
           <option value="multiple-select">Multiple Select</option>
           <option value="true-false">True or False</option>
           <option value="fill-in-the-blanks">Fill in the Blank</option>
-          <option value="hotspot">Hotspot Question</option>
           <option value="drag-and-drop">Drag And Drop</option>
           <option value="graded-quiz">Graded Quiz</option>
           <option value="personality-quiz">Personality Quiz</option>
