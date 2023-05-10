@@ -57,11 +57,12 @@
       anchor.addEventListener('click', (event) => {
         event.preventDefault();
         const title = event.target.parentNode.getAttribute('title');
+        const dataDescription = event.target.parentNode.getAttribute('data-description');
         const modal = document.getElementById('myModal');
         const modalText = document.getElementById('modalText');
         const closeModal = document.querySelector('.close');
         
-        modalText.innerHTML = 'Title: ' + title;
+        modalText.innerHTML = `<h2>${title}</h2><p>${dataDescription}</p>`;
         modal.style.display = 'flex';
         
         closeModal.addEventListener('click', function() {

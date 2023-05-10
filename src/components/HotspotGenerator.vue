@@ -8,18 +8,8 @@
           </button>
           Hotspot Generator
         </h2>
-        <div
-          id="HotspotinstructionsModal"
-          class="modal"
-          @click="closeModalOnClickOutside"
-          ref="modalBackdrop"
-        >
-          <div
-            class="modal-content"
-            @keydown.esc="closeModal"
-            tabindex="-1"
-            ref="modalContent"
-          >
+        <div id="HotspotinstructionsModal" class="modal" @click="closeModalOnClickOutside" ref="modalBackdrop">
+          <div class="modal-content" @keydown.esc="closeModal" tabindex="-1" ref="modalContent">
             <button class="close" @click="closeModal" tabindex="0">
               &times;
             </button>
@@ -99,44 +89,25 @@
         <div class="ActivityHeader">
           <div>
             <label for="image-file">Browse your device:</label>
-            <input
-              type="file"
-              id="image-file"
-              @change="handleImageFileInput"
-              ref="imageFile"
-              accept=".jpg,.jpeg,.png,.gif,.ico,.svg,.webp,.bmp"
-            />
+            <input type="file" id="image-file" @change="handleImageFileInput" ref="imageFile"
+              accept=".jpg,.jpeg,.png,.gif,.ico,.svg,.webp,.bmp" />
           </div>
           <div class="image-input">
             <label for="image-url">or enter an Image URL:</label>
-            <input
-              type="text"
-              id="image-url"
-              :value="imageUrl"
-              @input="handleImageUrlInput"
-            />
+            <input type="text" id="image-url" :value="imageUrl" @input="handleImageUrlInput" />
             &nbsp;<button @click="loadImage">Load</button>
           </div>
         </div>
-        <div
-          :class="[
-            'svg-container',
-            'image-container',
-            { 'delete-mode': deleteMode },
-          ]"
-          @click="addPoint"
-          ref="container"
-        >
-          <div
-            v-if="contextMenu.visible"
-            class="context-menu"
-            :style="{
-              top: contextMenu.y + 'px',
-              left: contextMenu.x + 'px',
-              display: contextMenu.visible ? 'block' : 'none',
-            }"
-            @click.stop="hideContextMenu"
-          >
+        <div :class="[
+          'svg-container',
+          'image-container',
+          { 'delete-mode': deleteMode },
+        ]" @click="addPoint" ref="container">
+          <div v-if="contextMenu.visible" class="context-menu" :style="{
+            top: contextMenu.y + 'px',
+            left: contextMenu.x + 'px',
+            display: contextMenu.visible ? 'block' : 'none',
+          }" @click.stop="hideContextMenu">
             <div class="context-menu-item" @click="showShapeProperties()">
               Set shape data
             </div>
@@ -144,78 +115,31 @@
               Delete shape
             </div>
           </div>
-          <svg
-            :viewBox="`0 0 ${imageWidth} ${imageHeight}`"
-            width="100%"
-            height="100%"
-          >
-            <image
-              :href="image"
-              x="0"
-              y="0"
-              :width="imageWidth"
-              :height="imageHeight"
-            />
+          <svg :viewBox="`0 0 ${imageWidth} ${imageHeight}`" width="100%" height="100%">
+            <image :href="image" x="0" y="0" :width="imageWidth" :height="imageHeight" />
 
-            <polygon
-              @click.stop="removeShape($event, index)"
-              @contextmenu.prevent="showContextMenu($event, index)"
-              v-for="(shape, index) in shapes"
-              :key="index"
-              :points="shape.points"
-              fill="rgba(0, 0, 255, 0.3)"
-              stroke="blue"
-            />
+            <polygon @click.stop="removeShape($event, index)" @contextmenu.prevent="showContextMenu($event, index)"
+              v-for="(shape, index) in shapes" :key="index" :points="shape.points" fill="rgba(0, 0, 255, 0.3)"
+              stroke="blue" />
 
-            <text
-              v-for="(shape, index) in shapes"
-              :key="'text-' + index"
-              :x="calculateMiddlePoint(shape.points).x"
-              :y="calculateMiddlePoint(shape.points).y"
-              text-anchor="middle"
-              font-size="14"
-              font-weight="bold"
-              fill="white"
-              style="pointer-events: none"
-            >
+            <text v-for="(shape, index) in shapes" :key="'text-' + index" :x="calculateMiddlePoint(shape.points).x"
+              :y="calculateMiddlePoint(shape.points).y" text-anchor="middle" font-size="14" font-weight="bold"
+              fill="white" style="pointer-events: none">
               {{ shape.name }}
             </text>
 
-            <polygon
-              v-if="points.length > 1"
-              :points="currentShapePoints"
-              fill="rgba(255, 0, 0, 0.3)"
-              stroke="red"
-            />
-            <line
-              v-if="points.length > 1"
-              :x1="points[0].x"
-              :y1="points[0].y"
-              :x2="points[points.length - 1].x"
-              :y2="points[points.length - 1].y"
-              stroke="white"
-              stroke-dasharray="4,2"
-            />
+            <polygon v-if="points.length > 1" :points="currentShapePoints" fill="rgba(255, 0, 0, 0.3)" stroke="red" />
+            <line v-if="points.length > 1" :x1="points[0].x" :y1="points[0].y" :x2="points[points.length - 1].x"
+              :y2="points[points.length - 1].y" stroke="white" stroke-dasharray="4,2" />
 
-            <circle
-              v-for="(point, index) in points"
-              :key="index"
-              :cx="point.x"
-              :cy="point.y"
-              r="5"
-              :fill="index === 0 && points.length > 1 ? 'yellow' : 'red'"
-              @click.stop="handleCircleClick(index)"
-            />
+            <circle v-for="(point, index) in points" :key="index" :cx="point.x" :cy="point.y" r="5"
+              :fill="index === 0 && points.length > 1 ? 'yellow' : 'red'" @click.stop="handleCircleClick(index)" />
           </svg>
         </div>
         <button @click="newShape" v-if="points.length > 1">
           Save / Add New Shape
         </button>
-        <button
-          @click="undo"
-          :disabled="!lastAction"
-          v-if="points.length || shapes.length || lastDeletedShape"
-        >
+        <button @click="undo" :disabled="!lastAction" v-if="points.length || shapes.length || lastDeletedShape">
           Undo
         </button>
         <button @click="downloadSVG" v-if="shapes.length">
@@ -225,53 +149,46 @@
           Reset
         </button>
       </div>
-      <div
-        ref="shapePropertiesModal"
-        class="modal"
-        id="shapePropertiesModal"
-        @click.self="closeShapePropertiesModal"
-      >
+      <div ref="shapePropertiesModal" class="modal" id="shapePropertiesModal" @click.self="closeShapePropertiesModal">
         <div class="modal-content">
           <h3>Shape Properties</h3>
           <label>
             Name:
             <input v-model="selectedShape.name" type="text" />
           </label>
-          <label>
-            Link (href):
-            <select v-model="selectedShape.linkPrefix">
-              <option value="http://">http://</option>
-              <option value="https://" selected>https://</option>
-              <option value="">none</option>
-            </select>
-            <input v-model="selectedShape.link" type="text" />
-          </label>
-          <div class="target">
-            <label for="open-in-new-window">Open in:</label>
+          <div>
             <label>
-              <input
-                type="radio"
-                id="open-in-new-window"
-                value="_blank"
-                v-model="selectedShape.target"
-              />
-              <span>New window</span>
-            </label>
-            <label>
-              <input
-                type="radio"
-                id="open-in-same-window"
-                value="_self"
-                v-model="selectedShape.target"
-              />
-              <span>Same window</span>
+              Description:
+              <textarea v-model="selectedShape.description" type="text"></textarea>
             </label>
           </div>
+          <div v-if="htmlUrl == `./interactive-svg-link-tooltip.html`">
+            <label>
+              Link (href):
+              <select v-model="selectedShape.linkPrefix">
+                <option value="http://">http://</option>
+                <option value="https://" selected>https://</option>
+                <option value="">none</option>
+              </select>
+              <input v-model="selectedShape.link" type="text" />
+            </label>
+            <div class="target">
+              <label for="open-in-new-window">Open in:</label>
+              <label>
+                <input type="radio" id="open-in-new-window" value="_blank" v-model="selectedShape.target" />
+                <span>New window</span>
+              </label>
+              <label>
+                <input type="radio" id="open-in-same-window" value="_self" v-model="selectedShape.target" />
+                <span>Same window</span>
+              </label>
+            </div>
 
-          <label>
-            Tooltip:
-            <input v-model="selectedShape.tooltip" type="text" />
-          </label>
+            <label>
+              Tooltip:
+              <input v-model="selectedShape.tooltip" type="text" />
+            </label>
+          </div>
           <button @click="saveShapeProperties">Save</button>
           <button @click="closeShapePropertiesModal">Cancel</button>
         </div>
@@ -524,6 +441,7 @@ export default {
         );
         anchor.setAttributeNS(null, "id", `shape-${index}`);
         anchor.setAttributeNS(null, "title", shape.name);
+        anchor.setAttributeNS(null, "data-description", shape.description);
         anchor.setAttributeNS(null, "data-tooltip", shape.tooltip);
         anchor.setAttributeNS(null, "tabindex", 0);
 
@@ -602,6 +520,7 @@ export default {
     },
     saveShapeProperties() {
       this.shapes[this.selectedShapeIndex].name = this.selectedShape.name;
+      this.shapes[this.selectedShapeIndex].description = this.selectedShape.description;
       this.shapes[this.selectedShapeIndex].link = this.selectedShape.link;
       this.shapes[this.selectedShapeIndex].target = this.selectedShape.target;
       this.shapes[this.selectedShapeIndex].linkPrefix =
@@ -662,10 +581,12 @@ export default {
       this.contextMenu.visible = false;
     },
 
-    removeShape(event, index) {},
+    removeShape(event, index) { },
 
     showShapeProperties() {
       this.selectedShape.name = this.shapes[this.selectedShapeIndex].name;
+      this.selectedShape.description =
+        this.shapes[this.selectedShapeIndex].description || "";
       this.selectedShape.link = this.shapes[this.selectedShapeIndex].link || "";
       this.selectedShape.tooltip =
         this.shapes[this.selectedShapeIndex].tooltip || "";
@@ -777,15 +698,21 @@ export default {
 }
 
 .svg-container {
-  max-width: 100vw; /* Set the maximum width to 100% of the viewport width */
-  max-height: 100vh; /* Set the maximum height to 100% of the viewport height */
-  overflow: auto; /* Add scrollbars if the content is larger than the container */
+  max-width: 100vw;
+  /* Set the maximum width to 100% of the viewport width */
+  max-height: 100vh;
+  /* Set the maximum height to 100% of the viewport height */
+  overflow: auto;
+  /* Add scrollbars if the content is larger than the container */
 }
 
 svg {
-  width: 100%; /* Set the width to 100% of its container */
-  height: auto; /* Set the height to maintain the aspect ratio */
-  display: block; /* Set the display to block to remove extra space below the SVG */
+  width: 100%;
+  /* Set the width to 100% of its container */
+  height: auto;
+  /* Set the height to maintain the aspect ratio */
+  display: block;
+  /* Set the display to block to remove extra space below the SVG */
 }
 
 .image-container svg {
@@ -819,12 +746,14 @@ svg {
   padding: 20px;
   border-radius: 5px;
 }
+
 .target {
   display: inline-flex;
   flex-direction: column;
   font-size: 12px;
   padding: 1rem;
 }
+
 .target input[type="radio"] {
   display: initial !important;
 }
@@ -836,10 +765,12 @@ svg {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
+
 .context-menu-item {
   padding: 8px 12px;
   cursor: pointer;
 }
+
 .context-menu-item:hover {
   background-color: #f1f1f1;
 }
