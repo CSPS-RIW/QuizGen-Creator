@@ -98,6 +98,9 @@
             &nbsp;<button @click="loadImage">Load</button>
           </div>
         </div>
+        <button @click="toggleDrawingMode">
+          {{ drawingMode === 'rectangle' ? 'Draw Points' : 'Draw Rectangles' }}
+        </button>
         <div :class="[
           'svg-container',
           'image-container',
@@ -118,15 +121,15 @@
           <svg :viewBox="`0 0 ${imageWidth} ${imageHeight}`" width="100%" height="100%">
             <image :href="image" x="0" y="0" :width="imageWidth" :height="imageHeight" />
 
-            <polygon @click.stop="removeShape($event, index)" @contextmenu.prevent="showContextMenu($event, index)"
-              v-for="(shape, index) in shapes" :key="index" :points="shape.points" fill="rgba(0, 0, 255, 0.3)"
-              stroke="blue" />
+            <polygon @click.stop="null" @contextmenu.prevent="showContextMenu($event, index)" v-for="(shape, index) in shapes" :key="index"
+              :points="shape.points" fill="rgba(0, 0, 255, 0.3)" stroke="blue" />
 
-            <text v-for="(shape, index) in shapes" :key="'text-' + index" :x="calculateMiddlePoint(shape.points).x"
-              :y="calculateMiddlePoint(shape.points).y" text-anchor="middle" font-size="14" font-weight="bold"
-              fill="white" style="pointer-events: none">
+            <text v-for="(shape, index) in shapes" :key="'text-' + index" :x="calculateMiddlePoint(shape).x"
+              :y="calculateMiddlePoint(shape).y" text-anchor="middle" font-size="14" font-weight="bold" fill="white"
+              style="pointer-events: none">
               {{ shape.name }}
             </text>
+
 
             <polygon v-if="points.length > 1" :points="currentShapePoints" fill="rgba(255, 0, 0, 0.3)" stroke="red" />
             <line v-if="points.length > 1" :x1="points[0].x" :y1="points[0].y" :x2="points[points.length - 1].x"
@@ -134,6 +137,8 @@
 
             <circle v-for="(point, index) in points" :key="index" :cx="point.x" :cy="point.y" r="5"
               :fill="index === 0 && points.length > 1 ? 'yellow' : 'red'" @click.stop="handleCircleClick(index)" />
+            <rect v-if="tempShapes.length > 0 && drawingMode === 'rectangle'" :x="tempShapes[0].x" :y="tempShapes[0].y"
+              :width="tempShapes[0].width" :height="tempShapes[0].height" fill="none" stroke="blue" />
           </svg>
         </div>
         <button @click="newShape" v-if="points.length > 1">
@@ -203,6 +208,10 @@ export default {
   emit: ["update:image"],
   data() {
     return {
+      drawingMode: 'rectangle', // or 'point'
+      dragStart: null,
+      dragging: false,
+      tempShapes: [],
       contextMenu: {
         x: 0,
         y: 0,
@@ -238,6 +247,9 @@ export default {
     },
   },
   methods: {
+    toggleDrawingMode() {
+      this.drawingMode = this.drawingMode === 'rectangle' ? 'point' : 'rectangle';
+    },
     handleImageUrlInput(event) {
       if (!this.imageUrlValid(event.target.value)) {
         // Check if the URL is valid
@@ -369,14 +381,59 @@ export default {
 
       return { x, y };
     },
+    startDrag(event) {
+      if (this.drawingMode !== 'rectangle') return;
+      const { x, y } = this.getSVGCoordinates(event);
+      this.dragStart = { x, y };
+      this.dragging = true;
+    },
+
+    drag(event) {
+      if (!this.dragging || this.drawingMode !== 'rectangle') return;
+      const { x, y } = this.getSVGCoordinates(event);
+      const rect = {
+        x: Math.min(this.dragStart.x, x),
+        y: Math.min(this.dragStart.y, y),
+        width: Math.abs(this.dragStart.x - x),
+        height: Math.abs(this.dragStart.y - y),
+      };
+
+      // Add the rectangle to the temporary shapes array
+      this.tempShapes = [rect];
+    },
+
+    endDrag(event) {
+      if (!this.dragging || this.drawingMode !== 'rectangle') return;
+
+      // The dragging has ended
+      this.dragging = false;
+
+      // Get the final mouse position
+      const { x, y } = this.getSVGCoordinates(event);
+
+      // Calculate the four points of the rectangle (top-left, top-right, bottom-right, bottom-left)
+      const points = [
+        { x: this.dragStart.x, y: this.dragStart.y }, // top-left
+        { x: x, y: this.dragStart.y }, // top-right
+        { x: x, y: y }, // bottom-right
+        { x: this.dragStart.x, y: y }, // bottom-left
+      ];
+
+      const pointsStr = points.map(p => `${p.x},${p.y}`).join(' ');
+
+      // Push the points string to the shapes array
+      this.shapes.push({ points: pointsStr, name: "" });
+
+      // Clear the temporary shapes array
+      this.tempShapes = [];
+    },
+
 
     addPoint(event) {
-      if (this.deleteMode || this.contextMenu.visible) return;
+      if (this.deleteMode || this.contextMenu.visible || this.drawingMode == 'rectangle') return;
 
       this.setContainerSize();
       const rect = this.$refs.container.getBoundingClientRect();
-      // const x = event.clientX - rect.left;
-      // const y = event.clientY - rect.top;
       const { x: rawX, y: rawY } = this.getSVGCoordinates(event);
 
       // Round coordinates to the first decimal
@@ -393,9 +450,14 @@ export default {
         return;
       }
 
-      this.points.push({ x, y });
+      // Add points depending on the drawing mode
+      if (this.drawingMode === 'point') {
+        this.points.push({ x, y });
+      }
+
       this.lastAction = "addPoint"; // Update last action
     },
+
 
     newShape() {
       const shapePoints = this.points
@@ -531,23 +593,29 @@ export default {
       this.closeShapePropertiesModal();
       this.selectionMode = false;
     },
-    calculateMiddlePoint(points) {
+    calculateMiddlePoint(shape) {
+      if (!shape) {
+        return { x: 0, y: 0 };
+      };
+      let points = shape.points;
+      if (!points) {
+        return { x: 0, y: 0 };
+      }
       let xSum = 0;
       let ySum = 0;
       let pointArray = points
         .split(" ")
         .map((point) => point.split(",").map(Number));
-
       for (let i = 0; i < pointArray.length; i++) {
         xSum += pointArray[i][0];
         ySum += pointArray[i][1];
       }
-
       const xAvg = xSum / pointArray.length;
       const yAvg = ySum / pointArray.length;
-
       return { x: xAvg, y: yAvg };
     },
+
+
 
     reset() {
       if (window.confirm("Are you sure you want to reset the activity?")) {
@@ -580,8 +648,6 @@ export default {
     hideContextMenu() {
       this.contextMenu.visible = false;
     },
-
-    removeShape(event, index) { },
 
     showShapeProperties() {
       this.selectedShape.name = this.shapes[this.selectedShapeIndex].name;
@@ -665,6 +731,10 @@ export default {
 
   mounted() {
     document.addEventListener("click", this.hideContextMenu);
+    const svg = this.$refs.container.querySelector("svg");
+    svg.addEventListener("mousedown", this.startDrag);
+    svg.addEventListener("mousemove", this.drag);
+    svg.addEventListener("mouseup", this.endDrag);
   },
   created() {
     document.addEventListener("keydown", this.keydownHandler);
@@ -672,6 +742,10 @@ export default {
   beforeDestroy() {
     document.removeEventListener("keydown", this.keydownHandler);
     document.removeEventListener("click", this.hideContextMenu);
+    const svg = this.$refs.container.querySelector("svg");
+    svg.removeEventListener("mousedown", this.startDrag);
+    svg.removeEventListener("mousemove", this.drag);
+    svg.removeEventListener("mouseup", this.endDrag);
   },
 };
 </script>
