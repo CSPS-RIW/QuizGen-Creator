@@ -104,7 +104,7 @@
               id="image-file"
               @change="handleImageFileInput"
               ref="imageFile"
-              accept=".jpg,.jpeg,png,.gif,.ico,.svg,.webp,.bmp"
+              accept=".jpg,.jpeg,.png,.gif,.ico,.svg,.webp,.bmp"
             />
           </div>
           <div class="image-input">
