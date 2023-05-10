@@ -40,6 +40,8 @@
               <li>
                 Click "Load" to load the image into the hotspot generator.
               </li>
+              <li>By default, the drawing makes rectangles that you can draw over the surface. If you switch to Draw
+                points, you will be able to draw irregular shapes. </li>
               <li>
                 Click on the image to create points that define the shape of the
                 hotspot area. The first click creates the first point, and each
@@ -47,14 +49,15 @@
               </li>
               <li>
                 Connect the last point to the first point by clicking on the
-                first point (the yellow circle). This will close the shape.
+                first point (the yellow circle). This will close and save the shape.
               </li>
               <li>
                 Click "Save / Add New Shape" to save the created shape and start
                 creating a new shape, if needed.
               </li>
               <li>
-                If you want to name the shape, click "Name Shape" and enter a
+                If you want to name the shape, right-click on the shape and select Set Shape Data. "Name Shape" and enter
+                a
                 name in the prompt that appears.
               </li>
               <li>
@@ -62,9 +65,7 @@
                 interactive SVG file.
               </li>
               <li>
-                To delete a shape, click "Enable Delete Shape" and then click on
-                the shape you want to delete. Click "Disable Delete Shape" to
-                exit delete mode.
+                To delete a shape, right click on that shape and click "Delete Shape".
               </li>
               <li>
                 Click "Reset" to clear the hotspot generator and start over.
@@ -98,8 +99,13 @@
             &nbsp;<button @click="loadImage">Load</button>
           </div>
         </div>
+        <label for="colorInput">Select the fill colour of the resulting SVG</label>
+        <input id="colorInput" type="color" v-model="fillColor" v-if="!transparent">
+        <label>
+          <input type="checkbox" v-model="transparent"> Transparent
+        </label>
         <button @click="toggleDrawingMode">
-          {{ drawingMode === 'rectangle' ? 'Draw Points' : 'Draw Rectangles' }}
+          {{ drawingMode === 'rectangle' ? 'Switch to Draw Points' : 'Switch to Draw Rectangles' }}
         </button>
         <div :class="[
           'svg-container',
@@ -121,8 +127,9 @@
           <svg :viewBox="`0 0 ${imageWidth} ${imageHeight}`" width="100%" height="100%">
             <image :href="image" x="0" y="0" :width="imageWidth" :height="imageHeight" />
 
-            <polygon @click.stop="null" @contextmenu.prevent="showContextMenu($event, index)" v-for="(shape, index) in shapes" :key="index"
-              :points="shape.points" fill="rgba(0, 0, 255, 0.3)" stroke="blue" />
+            <polygon @click.stop="null" @contextmenu.prevent="showContextMenu($event, index)"
+              v-for="(shape, index) in shapes" :key="index" :points="shape.points" :fill="fillColor" opacity="0.3"
+              stroke="blue" />
 
             <text v-for="(shape, index) in shapes" :key="'text-' + index" :x="calculateMiddlePoint(shape).x"
               :y="calculateMiddlePoint(shape).y" text-anchor="middle" font-size="14" font-weight="bold" fill="white"
@@ -138,7 +145,7 @@
             <circle v-for="(point, index) in points" :key="index" :cx="point.x" :cy="point.y" r="5"
               :fill="index === 0 && points.length > 1 ? 'yellow' : 'red'" @click.stop="handleCircleClick(index)" />
             <rect v-if="tempShapes.length > 0 && drawingMode === 'rectangle'" :x="tempShapes[0].x" :y="tempShapes[0].y"
-              :width="tempShapes[0].width" :height="tempShapes[0].height" fill="none" stroke="blue" />
+              :width="tempShapes[0].width" :height="tempShapes[0].height" fill="none" stroke="red" />
           </svg>
         </div>
         <button @click="newShape" v-if="points.length > 1">
@@ -208,6 +215,8 @@ export default {
   emit: ["update:image"],
   data() {
     return {
+      fillColor: '#0000ff', // Default fill color
+      transparent: true, // Default to non-transparent
       drawingMode: 'rectangle', // or 'point'
       dragStart: null,
       dragging: false,
@@ -468,7 +477,7 @@ export default {
       this.lastAction = "newShape"; // Update last action
     },
     handleCircleClick(index) {
-      if (index === 0 && this.points.length > 1) {
+      if (index === 0 && this.points.length > 2) {
         this.newShape();
       }
     },
@@ -492,8 +501,9 @@ export default {
       this.shapes.forEach((shape, index) => {
         const polygon = document.createElementNS(xmlns, "polygon");
         polygon.setAttributeNS(null, "points", shape.points);
-        polygon.setAttributeNS(null, "fill", "transparent");
+        polygon.setAttributeNS(null, "fill", this.transparent ? "transparent" : this.fillColor);
         polygon.setAttributeNS(null, "stroke", "transparent");
+        polygon.setAttributeNS(null, "opacity", "0.3");
 
         const anchor = document.createElementNS(xmlns, "a");
         anchor.setAttributeNS(
