@@ -20,27 +20,45 @@
 </head>
 <body>
   <div id="svg-container">
-    <!-- Your inline SVG code goes here -->
   </div>
+  <div id="counter-message">0/0</div>
   <div id="success-message" class="success-message">
     All items have been clicked!
   </div>
   <script>
-    const anchorElements = document.querySelectorAll('#svg-container a');
-    const anchorCount = anchorElements.length;
-    const clickedAnchors = new Set();
+    window.onload = function() {
+      const svgContainer = document.querySelector('#svg-container>svg');
+      const anchorElements = document.querySelectorAll('#svg-container a');
+      const counterMessage = document.getElementById('counter-message');
+      const anchorCount = anchorElements.length;
+      const clickedAnchors = new Set();
 
-    anchorElements.forEach(anchor => {
-      anchor.addEventListener('click', (event) => {
-        event.preventDefault();
-        clickedAnchors.add(anchor);
+      counterMessage.textContent = `${clickedAnchors.size}/${anchorCount}`;
 
-        if (clickedAnchors.size === anchorCount) {
-          const successMessage = document.getElementById('success-message');
-          successMessage.style.display = 'block';
-        }
+      anchorElements.forEach(anchor => {
+        anchor.addEventListener('click', (event) => {
+          event.preventDefault();
+          clickedAnchors.add(anchor);
+
+          // Create SVG circle and append it to the SVG container
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttributeNS(null, 'cx', event.pageX);
+          circle.setAttributeNS(null, 'cy', event.pageY);
+          circle.setAttributeNS(null, 'r', '50');
+          circle.setAttributeNS(null, 'stroke', 'white');
+          circle.setAttributeNS(null, 'fill', 'transparent');
+          svgContainer.appendChild(circle);
+
+          // Update counter
+          counterMessage.textContent = `${clickedAnchors.size}/${anchorCount}`;
+
+          if (clickedAnchors.size === anchorCount) {
+            const successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+          }
+        });
       });
-    });
+    }
   </script>
 </body>
 </html>
