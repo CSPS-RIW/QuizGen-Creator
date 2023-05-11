@@ -124,7 +124,7 @@
               Delete shape
             </div>
           </div>
-          <svg :viewBox="`0 0 ${imageWidth} ${imageHeight}`" width="100%" height="100%">
+          <svg :viewBox="`0 0 ${imageWidth} ${imageHeight}`" :width="imageWidth" :height="imageHeight">
             <image :href="image" x="0" y="0" :width="imageWidth" :height="imageHeight" />
 
             <polygon @click.stop="null" @contextmenu.prevent="showContextMenu($event, index)"
@@ -382,10 +382,11 @@ export default {
       const container = this.$refs.container;
       const aspectRatio = this.imageHeight / this.imageWidth;
 
-      const containerWidth = container.clientWidth;
-      const containerHeight = containerWidth * aspectRatio;
+      const containerWidth = this.imageWidth > 800 ? 800 : this.imageWidth;
+      const containerHeight = this.imageHeight // containerWidth * aspectRatio;
 
       container.style.height = `${containerHeight}px`;
+      container.style.width = `${containerWidth}px`;
     },
 
     getSVGCoordinates(event) {
@@ -804,6 +805,8 @@ export default {
   cursor: pointer;
   position: relative;
   display: inline-block;
+  width: 100%;
+  margin:auto;
 }
 
 .image-container.delete-mode {
@@ -820,11 +823,12 @@ export default {
 }
 
 svg {
-  width: 100%;
+  /* width: 100%; */
   /* Set the width to 100% of its container */
   height: auto;
   /* Set the height to maintain the aspect ratio */
   display: block;
+  margin: auto;
   /* Set the display to block to remove extra space below the SVG */
 }
 
