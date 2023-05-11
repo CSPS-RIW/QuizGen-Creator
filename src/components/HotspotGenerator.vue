@@ -428,6 +428,7 @@ export default {
 
       // Get the final mouse position
       const { x, y } = this.getSVGCoordinates(event);
+      if(x == this.dragStart.x || y == this.dragStart.y) return;
 
       // Calculate the four points of the rectangle (top-left, top-right, bottom-right, bottom-left)
       const points = [
@@ -657,12 +658,31 @@ export default {
       const scaleX = rect.width / this.imageWidth;
       const scaleY = rect.height / this.imageHeight;
 
-      // Set the context menu position according to the SVG container's scale
-      this.contextMenu.x = x * scaleX;
-      this.contextMenu.y = y * scaleY;
+      // Calculate contextMenu position
+      let contextMenuX = x * scaleX;
+      let contextMenuY = y * scaleY;
+
+      // Make the context menu visible to get its dimensions
       this.contextMenu.visible = true;
-      this.selectedShapeIndex = index;
+      this.$nextTick(() => {
+        const contextMenuElement = this.$el.querySelector(".context-menu");
+
+        // Adjust the position considering the context menu dimensions
+        if (contextMenuX + contextMenuElement.offsetWidth > rect.right) {
+          contextMenuX = rect.right - contextMenuElement.offsetWidth;
+        }
+
+        if (contextMenuY + contextMenuElement.offsetHeight > rect.bottom) {
+          contextMenuY = rect.bottom - contextMenuElement.offsetHeight;
+        }
+
+        // Set the context menu position
+        this.contextMenu.x = contextMenuX;
+        this.contextMenu.y = contextMenuY;
+        this.selectedShapeIndex = index;
+      });
     },
+
 
     hideContextMenu() {
       this.contextMenu.visible = false;
