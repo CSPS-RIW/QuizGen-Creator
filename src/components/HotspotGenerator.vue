@@ -281,16 +281,25 @@ export default {
         alert("Invalid URL");
         return;
       }
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = async () => {
-        const resizedImg = await this.resizeImageIfNeeded(img);
-        this.imageLoaded(resizedImg);
-      };
-      img.onerror = () => {
-        alert("No image found at the provided URL");
-      };
-      img.src = this.imageUrl;
+
+      try {
+        const response = await fetch(this.imageUrl);
+
+        if (!response.ok) {
+          alert("Failed to load image");
+          return;
+        }
+
+        const blob = await response.blob();
+        const img = new Image();
+        img.onload = async () => {
+          const resizedImg = await this.resizeImageIfNeeded(img);
+          this.imageLoaded(resizedImg);
+        };
+        img.src = URL.createObjectURL(blob);
+      } catch (error) {
+        alert("Error occurred while loading the image");
+      }
     },
 
     imageUrlValid(url) {
@@ -514,7 +523,7 @@ export default {
         anchor.setAttributeNS(null, "id", `shape-${index}`);
         anchor.setAttributeNS(null, "title", shape.name);
         anchor.setAttributeNS(null, "data-description", shape.description);
-        anchor.setAttributeNS(null, "data-tooltip", shape.tooltip);
+        anchor.setAttributeNS(null, "data-tooltip", shape.name);
         anchor.setAttributeNS(null, "tabindex", 0);
 
         if (
