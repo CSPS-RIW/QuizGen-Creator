@@ -1,65 +1,136 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive SVG</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #F3F3F3;
+      margin: 0;
+      padding: 0;
+    }
+
+    #svg-container {
+      position: relative;
+    }
+
+    #svg-container,
+    #title-list {
+      margin: 20px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
     .success-message {
       display: none;
+      position: absolute;
       background-color: #d4edda;
       border-color: #c3e6cb;
       color: #155724;
       padding: 10px;
       margin: 10px 0;
       border-radius: 5px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     #title-list {
-      margin-bottom: 20px;
+      list-style: none;
+    }
+
+    #title-list li {
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #title-list li.selected {
+      background-color: #c3e6cb;
     }
 
     svg a {
       cursor: pointer;
     }
+
+    #tooltip {
+      position: absolute;
+      background: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
   </style>
 </head>
+
 <body>
-  
-  </div>
-  <div>
   <div id="svg-container">
     <!-- Your inline SVG code goes here -->
   </div>
-  <div id="title-list">
-  </div>
+  <ul id="title-list">
+  </ul>
+  <div id="tooltip"></div>
   <div id="success-message" aria-live="polite" class="success-message">
-    Term correctly associated!
+    Correct!
   </div>
   <script>
     const anchorElements = document.querySelectorAll('#svg-container a');
     const titleList = document.getElementById('title-list');
-    
+    const tooltip = document.getElementById('tooltip');
+    let lastClickedAnchor = null;
+
+    let listItems = []; // New array to store list items
+
     anchorElements.forEach((anchor, index) => {
       const title = anchor.getAttribute('title');
-      const radioButton = document.createElement('input');
-      radioButton.type = 'radio';
-      radioButton.name = 'svg-titles';
-      radioButton.id = `title-${index}`;
-      radioButton.value = title;
+      const listItem = document.createElement('li');
+      listItem.innerText = title;
+      listItem.id = `title-${index}`;
 
-      const label = document.createElement('label');
-      label.htmlFor = `title-${index}`;
-      label.innerText = title;
+      listItems.push(listItem); // Push the new list item into the array
 
-      titleList.appendChild(radioButton);
-      titleList.appendChild(label);
-      titleList.appendChild(document.createElement('br'));
+      // Randomize the order of list items
+      listItems.sort(() => Math.random() - 0.5).forEach(listItem => {
+        titleList.appendChild(listItem);
+      });
+
+      listItem.addEventListener('click', () => {
+        // Remove selected class from previously selected item
+        const previousSelected = document.querySelector('#title-list .selected');
+        if (previousSelected) {
+          previousSelected.classList.remove('selected');
+        }
+
+        // Add selected class to current clicked item
+        listItem.classList.add('selected');
+
+        // Check if the selected list item matches the last clicked anchor
+        if (lastClickedAnchor && lastClickedAnchor.getAttribute('title') === listItem.innerText) {
+          const successMessage = document.getElementById('success-message');
+          successMessage.style.display = 'block';
+          setTimeout(() => {
+            successMessage.style.display = 'none';
+          }, 3000);
+        }
+      });
 
       anchor.addEventListener('click', (event) => {
         event.preventDefault();
-        const selectedTitle = document.querySelector('input[name="svg-titles"]:checked').value;
-        if (selectedTitle === title) {
+        lastClickedAnchor = anchor;
+
+        // Check if the selected list item matches the clicked anchor
+        const selectedListItem = document.querySelector('#title-list .selected');
+        if (selectedListItem && selectedListItem.innerText === title) {
           const successMessage = document.getElementById('success-message');
           successMessage.style.display = 'block';
           setTimeout(() => {
@@ -70,4 +141,5 @@
     });
   </script>
 </body>
+
 </html>
