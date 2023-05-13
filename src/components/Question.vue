@@ -3,11 +3,8 @@
     <div class="ActivityHeader">
       <h2>Question {{ index + 1 }}</h2>
       <div>
-        <label for="question-type">Question Type:</label
-        ><select
-          v-model="dataQuestion.question_type"
-          @change="onQuestionTypeChange"
-        >
+        <label for="question-type">Question Type:</label><select v-model="dataQuestion.question_type"
+          @change="onQuestionTypeChange">
           <option value="single-select">Single Select</option>
           <option value="multiple-select">Multiple Select</option>
           <option value="true-false">True or False</option>
@@ -18,6 +15,7 @@
           <option value="highlight-correct-sentences">
             Highlight Sentences
           </option>
+          <option value="simple-reveal">Simple Reveal</option>
         </select>
       </div>
     </div>
@@ -25,26 +23,17 @@
     <!-- Single Select -->
     <div v-if="dataQuestion.question_type === 'single-select'">
       <div>
-        <label for="question-text">Question Text: </label
-        ><input type="text" v-model="dataQuestion.question_text" />
+        <label for="question-text">Question Text: </label><input type="text" v-model="dataQuestion.question_text" />
       </div>
       <div>
-        <label for="question-instructions">Answer Instructions: </label
-        ><input type="text" v-model="dataQuestion.instructions" />
+        <label for="question-instructions">Answer Instructions: </label><input type="text"
+          v-model="dataQuestion.instructions" />
       </div>
-      <div
-        v-for="(option, qindex) in dataQuestion.answer_options"
-        :key="qindex"
-      >
+      <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
         <input type="text" v-model="option.text" />
-        <input
-          type="radio"
-          :name="'question' + index + '-option'"
-          :id="'isCorrect' + index + '-option' + qindex"
-          :checked="option.isCorrect"
-          @change="updateSingleSelectCorrectAnswer(qindex)"
-        />
+        <input type="radio" :name="'question' + index + '-option'" :id="'isCorrect' + index + '-option' + qindex"
+          :checked="option.isCorrect" @change="updateSingleSelectCorrectAnswer(qindex)" />
         &nbsp;<label :for="'isCorrect' + index + '-option' + qindex"> </label>
         <br />
       </div>
@@ -53,111 +42,89 @@
 
     <!-- Multiple Select -->
     <div v-else-if="dataQuestion.question_type === 'multiple-select'">
-      <label for="question-text">Question Text:</label
-      ><input type="text" v-model="dataQuestion.question_text" />
+      <label for="question-text">Question Text:</label><input type="text" v-model="dataQuestion.question_text" />
       <div>
-        <label for="question-instructions">Answer Instructions: </label
-        ><input type="text" v-model="dataQuestion.instructions" />
+        <label for="question-instructions">Answer Instructions: </label><input type="text"
+          v-model="dataQuestion.instructions" />
       </div>
-      <div
-        v-for="(option, qindex) in dataQuestion.answer_options"
-        :key="qindex"
-      >
+      <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
         <input type="text" v-model="option.text" />
-        &nbsp;<input
-          type="checkbox"
-          :name="'question' + index + '-option'"
-          v-model="option.isCorrect"
-        />
+        &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" />
         <br />
       </div>
       <button class="add-option" @click.prevent="addOption">Add Option</button>
     </div>
 
     <div v-else-if="dataQuestion.question_type === 'true-false'">
-      <label for="question-text">Question Text:</label
-      ><input type="text" v-model="dataQuestion.question_text" />
+      <label for="question-text">Question Text:</label><input type="text" v-model="dataQuestion.question_text" />
       <div>
-        <label for="question-instructions">Answer Instructions: </label
-        ><input type="text" v-model="dataQuestion.instructions" />
+        <label for="question-instructions">Answer Instructions: </label><input type="text"
+          v-model="dataQuestion.instructions" />
       </div>
-      <div
-        v-for="(option, qindex) in dataQuestion.answer_options"
-        :key="qindex"
-      >
+      <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
         <input type="text" v-model="dataQuestion.answer_options[qindex].text" />
-        &nbsp;<input
-          type="radio"
-          :id="'question' + index + '-option' + qindex"
-          :name="'question' + index + '-option'"
-          @change="updateSingleSelectCorrectAnswer(qindex)"
-          :value="option.value"
-          :checked="option.isCorrect"
-        />
+        &nbsp;<input type="radio" :id="'question' + index + '-option' + qindex" :name="'question' + index + '-option'"
+          @change="updateSingleSelectCorrectAnswer(qindex)" :value="option.value" :checked="option.isCorrect" />
         <label :for="'question' + index + '-option' + qindex">Correct</label>
         <br />
       </div>
     </div>
     <div v-else-if="dataQuestion.question_type === 'fill-in-the-blanks'">
       <div>
-        <label for="question-instructions">Answer Instructions: </label
-        ><input type="text" v-model="dataQuestion.instructions" />
+        <label for="question-instructions">Answer Instructions: </label><input type="text"
+          v-model="dataQuestion.instructions" />
       </div>
-      <FillBlanks
-        @update:question="handleFillBlanksUpdate"
-        :loadedJson="dataQuestion"
-        :questionIndex="index"
-      />
+      <FillBlanks @update:question="handleFillBlanksUpdate" :loadedJson="dataQuestion" :questionIndex="index" />
     </div>
     <div v-else-if="dataQuestion.question_type === 'hotspot'">
       <HotSpotGenerator @update:shapes="handleHotSpotUpdate" />
     </div>
     <div v-else-if="dataQuestion.question_type === 'drag-and-drop'">
       <div>
-        <label for="question-instructions">Answer Instructions: </label
-        ><input type="text" v-model="dataQuestion.instructions" />
+        <label for="question-instructions">Answer Instructions: </label><input type="text"
+          v-model="dataQuestion.instructions" />
       </div>
-      <drag-and-drop
-        @update:activity="handleDragAndDropUpdate"
-        :loadedJson="dataQuestion"
-      />
+      <drag-and-drop @update:activity="handleDragAndDropUpdate" :loadedJson="dataQuestion" />
     </div>
     <div v-else-if="dataQuestion.question_type === 'graded-quiz'">
-      <GradedQuiz
-        @update:activity="handleGradedQuizUpdate"
-        :loadedJson="dataQuestion.gradedQuiz"
-      />
+      <GradedQuiz @update:activity="handleGradedQuizUpdate" :loadedJson="dataQuestion.gradedQuiz" />
     </div>
     <div v-else-if="dataQuestion.question_type === 'personality-quiz'">
-      <PersonalityQuiz
-        @save-quiz="handlePersonalityQuizSubmit"
-        :loadedJson="dataQuestion.personalityQuiz"
-      />
+      <PersonalityQuiz @save-quiz="handlePersonalityQuizSubmit" :loadedJson="dataQuestion.personalityQuiz" />
     </div>
-    <div
-      v-else-if="dataQuestion.question_type === 'highlight-correct-sentences'"
-    >
+    <div v-else-if="dataQuestion.question_type === 'highlight-correct-sentences'">
       <div>
-        <label for="question-instructions">Answer Instructions: </label
-        ><input type="text" v-model="dataQuestion.instructions" />
+        <label for="question-instructions">Answer Instructions: </label><input type="text"
+          v-model="dataQuestion.instructions" />
       </div>
-      <GenerateSentences
-        @update:activity="handleHighlightCorrectSentencesUpdate"
-        :loadedJson="dataQuestion"
-      ></GenerateSentences>
+      <GenerateSentences @update:activity="handleHighlightCorrectSentencesUpdate" :loadedJson="dataQuestion">
+      </GenerateSentences>
+    </div>
+    <!-- Simple Reveal -->
+    <div v-else-if="dataQuestion.question_type === 'simple-reveal'">
+      <div>
+        <label for="question-instructions">Instructions: </label>
+        <input type="text" v-model="dataQuestion.instructions" />
+      </div>
+      <div>
+        <label for="question-text">Content of the first page</label>
+        <textarea type="text" v-model="dataQuestion.question_text" ></textarea>
+      </div>
+      
+      <div>
+        <label for="hidden-content">Hidden Content: </label>
+        <textarea v-model="dataQuestion.hidden_content"></textarea>
+      </div>
     </div>
     <br />
-    <div
-      v-if="
-        dataQuestion.question_type === 'multiple-select' ||
-        dataQuestion.question_type === 'true-false' ||
-        dataQuestion.question_type === 'single-select' ||
-        dataQuestion.question_type === 'fill-in-the-blanks' ||
-        dataQuestion.question_type === 'highlight-correct-sentences'
-      "
-    >
+    <div v-if="dataQuestion.question_type === 'multiple-select' ||
+      dataQuestion.question_type === 'true-false' ||
+      dataQuestion.question_type === 'single-select' ||
+      dataQuestion.question_type === 'fill-in-the-blanks' ||
+      dataQuestion.question_type === 'highlight-correct-sentences'
+      ">
       <label for="generic-feedback">Generic Feedback:</label>
       <textarea v-model="dataQuestion.generic_feedback"></textarea>
       <br />
@@ -261,12 +228,12 @@ export default {
       this.dataQuestion.shapes = [];
 
       switch (this.dataQuestion.question_type) {
-		case "highlight-correct-sentences":
-		  this.handleHighlightCorrectSentencesUpdate({
-			text: "",
-			correct_answer: [],
-		  });
-		  break;
+        case "highlight-correct-sentences":
+          this.handleHighlightCorrectSentencesUpdate({
+            text: "",
+            correct_answer: [],
+          });
+          break;
         case "hotspot":
           this.handleHotSpotUpdate([]);
           break;
