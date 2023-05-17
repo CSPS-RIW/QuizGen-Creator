@@ -377,6 +377,8 @@ export default {
               : undefined;
           const shapes =
             question.question_type === "hotspot" ? question.shapes : undefined;
+            const first_content = question.question_type === "simple-reveal" ? question.first_content : undefined; 
+            const hidden_content = question.question_type === "simple-reveal" ? question.hidden_content : undefined; 
 
           return generateQuestionObject({
             question_type,
@@ -387,6 +389,8 @@ export default {
             gradedQuiz,
             personalityQuiz,
             shapes,
+            hidden_content,
+            first_content,
           });
         }),
       };

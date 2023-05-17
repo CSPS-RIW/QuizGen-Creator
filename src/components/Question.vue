@@ -105,14 +105,18 @@
     <!-- Simple Reveal -->
     <div v-else-if="dataQuestion.question_type === 'simple-reveal'">
       <div>
+        <label for="question-text">Page Header: </label>
+        <input type="text" v-model="dataQuestion.question_text" />
+      </div>
+      <div>
         <label for="question-instructions">Instructions: </label>
         <input type="text" v-model="dataQuestion.instructions" />
       </div>
       <div>
-        <label for="question-text">Content of the first page</label>
-        <textarea type="text" v-model="dataQuestion.question_text" ></textarea>
+        <label for="hidden-content">Content of the first page: </label>
+        <textarea v-model="dataQuestion.first_content"></textarea>
       </div>
-      
+
       <div>
         <label for="hidden-content">Hidden Content: </label>
         <textarea v-model="dataQuestion.hidden_content"></textarea>

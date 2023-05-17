@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="preview">
     <div :class="[styleClass, 'question-preview']">
-      <h2>Question {{ index + 1 }} Preview</h2>
+      <h6>Activity {{ index + 1 }} Preview</h6>
       <div>{{ question.instructions }}</div>
       <div v-if="question.question_type === 'single-select'">
         <p>{{ question.question_text }}</p>
