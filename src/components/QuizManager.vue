@@ -274,7 +274,7 @@ export default {
   },
   data() {
     return {
-      myQuiz: "Quiz Name",
+      myQuiz: "",
       questions: [],
       readyForChange: false,
       selectedStyle: "formal",

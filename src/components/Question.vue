@@ -30,6 +30,7 @@
           v-model="dataQuestion.instructions" />
       </div>
       <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
+        <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20" height="20"><use href="#deleteButton"></use></svg></button>
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
         <input type="text" v-model="option.text" />
         <input type="radio" :name="'question' + index + '-option'" :id="'isCorrect' + index + '-option' + qindex"
@@ -48,6 +49,7 @@
           v-model="dataQuestion.instructions" />
       </div>
       <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
+        <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20" height="20"><use href="#deleteButton"></use></svg></button>
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
         <input type="text" v-model="option.text" />
         &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" />
@@ -141,6 +143,31 @@
     </div>
     <hr />
     <button @click="deleteQuestion(index)">Delete Question</button>
+    <svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 18 18"
+            style="display: none;"
+					>
+          <symbol id="deleteButton" viewBox="0 0 18 18">
+						<g transform="translate(-3.375 -3.375)">
+							<path
+								id="Path_1"
+								data-name="Path 1"
+								d="M18.246,16.875H11.14c-.345,0-.628.285-.628.76a.678.678,0,0,0,.628.76h7.106a.773.773,0,0,0,0-1.519Z"
+								transform="translate(-2.318 -5.26)"
+								fill="#E51212"
+							/>
+							<path
+								id="Path_2"
+								data-name="Path 2"
+								d="M12.375,4.587a7.785,7.785,0,1,1-5.508,2.28,7.737,7.737,0,0,1,5.508-2.28m0-1.212a9,9,0,1,0,9,9,9,9,0,0,0-9-9Z"
+								fill="#E51212"
+							/>
+						</g>
+            </symbol>
+					</svg>
   </div>
 </template>
 
@@ -335,9 +362,19 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .ActivityHeader {
   display: flex;
   justify-content: space-between;
+}
+.delete-option {
+  position: relative;
+  top: .25rem;
+  background-color:transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  margin: 4px 0px;
+  cursor: pointer;
 }
 </style>
