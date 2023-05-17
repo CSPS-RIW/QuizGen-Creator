@@ -4,8 +4,8 @@ import GlossaryEditor from './components/GlossaryEditor.vue';
 import HotspotGenerator from './components/HotspotGenerator.vue';
 
 const routes = [
-  { path: '/', redirect: '/quiz-manager' },
-  { path: '/quiz-manager', component: QuizManager },
+  // { path: '/', redirect: '/quiz-manager' },
+  { path: '/', component: QuizManager },
   { path: '/glossary-editor', component: GlossaryEditor },
   { path: '/hotspot-generator', component: HotspotGenerator },
 ];
