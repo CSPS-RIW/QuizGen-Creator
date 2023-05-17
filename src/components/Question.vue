@@ -342,6 +342,9 @@ export default {
         this.$emit("delete-question", this.index);
       }
     },
+    deleteOption(qindex) {
+      this.dataQuestion.answer_options.splice(qindex, 1);
+    },
   },
   watch: {
     question(newQuestion) {
