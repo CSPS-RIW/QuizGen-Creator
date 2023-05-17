@@ -31,7 +31,7 @@
       </div>
       <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
         <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20" height="20"><use href="#deleteButton"></use></svg></button>
-        <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
+        <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}: </label>
         <input type="text" v-model="option.text" />
         <input type="radio" :name="'question' + index + '-option'" :id="'isCorrect' + index + '-option' + qindex"
           :checked="option.isCorrect" @change="updateSingleSelectCorrectAnswer(qindex)" />
@@ -43,7 +43,7 @@
 
     <!-- Multiple Select -->
     <div v-else-if="dataQuestion.question_type === 'multiple-select'">
-      <label for="question-text">Question Text:</label><input type="text" v-model="dataQuestion.question_text" />
+      <label for="question-text">Question Text: </label><input type="text" v-model="dataQuestion.question_text" />
       <div>
         <label for="question-instructions">Answer Instructions: </label><input type="text"
           v-model="dataQuestion.instructions" />
@@ -369,6 +369,7 @@ export default {
 }
 .delete-option {
   position: relative;
+  padding: 0;
   top: .25rem;
   background-color:transparent;
   box-shadow: none;
