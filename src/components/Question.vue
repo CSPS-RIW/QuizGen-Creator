@@ -369,7 +369,7 @@ export default {
 }
 .delete-option {
   position: relative;
-  padding: 0;
+  padding: 0 0.5rem 0 0;
   top: .25rem;
   background-color:transparent;
   box-shadow: none;
