@@ -9,7 +9,8 @@
           <option value="multiple-select">Multiple Select</option>
           <option value="true-false">True or False</option>
           <option value="fill-in-the-blanks">Fill in the Blank</option>
-          <option value="drag-and-drop">Drag And Drop</option>
+          <option value="order-items">Order Items</option>
+          <!-- <option value="drag-and-drop">Drag And Drop</option> -->
           <option value="graded-quiz">Graded Quiz</option>
           <option value="personality-quiz">Personality Quiz</option>
           <option value="highlight-correct-sentences">
@@ -30,7 +31,10 @@
           v-model="dataQuestion.instructions" />
       </div>
       <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
-        <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20" height="20"><use href="#deleteButton"></use></svg></button>
+        <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20"
+            height="20">
+            <use href="#deleteButton"></use>
+          </svg></button>
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}: </label>
         <input type="text" v-model="option.text" />
         <input type="radio" :name="'question' + index + '-option'" :id="'isCorrect' + index + '-option' + qindex"
@@ -49,7 +53,10 @@
           v-model="dataQuestion.instructions" />
       </div>
       <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
-        <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20" height="20"><use href="#deleteButton"></use></svg></button>
+        <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)"><svg width="20"
+            height="20">
+            <use href="#deleteButton"></use>
+          </svg></button>
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
         <input type="text" v-model="option.text" />
         &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" />
@@ -104,6 +111,32 @@
       <GenerateSentences @update:activity="handleHighlightCorrectSentencesUpdate" :loadedJson="dataQuestion">
       </GenerateSentences>
     </div>
+    <!-- Order Items -->
+    <div v-else-if="dataQuestion.question_type === 'order-items'">
+      <label for="question-text">Question Text: </label>
+      <input type="text" v-model="dataQuestion.question_text" />
+      <div>
+        <label for="question-instructions">Answer Instructions: </label>
+        <input type="text" v-model="dataQuestion.instructions" />
+      </div>
+      <transition-group name="slide">
+        <div v-for="(option, qindex) in dataQuestion.answer_options" :key="qindex">
+          <button title="Delete option" class="delete-option" @click.prevent="deleteOption(qindex)">
+            <svg width="20" height="20">
+              <use href="#deleteButton"></use>
+            </svg>
+          </button>
+          <button title="Move up" class="move-option" @click.prevent="moveOptionUp(qindex)"
+            :disabled="qindex === 0">▲</button>
+          <button title="Move down" class="move-option" @click.prevent="moveOptionDown(qindex)"
+            :disabled="qindex === dataQuestion.answer_options.length - 1">▼</button>
+          <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}: </label>
+          <input type="text" v-model="dataQuestion.answer_options[qindex]" />
+          <br />
+        </div>
+      </transition-group>
+      <button class="add-option" @click.prevent="addOption">Add Option</button>
+    </div>
     <!-- Simple Reveal -->
     <div v-else-if="dataQuestion.question_type === 'simple-reveal'">
       <div>
@@ -129,8 +162,8 @@
       dataQuestion.question_type === 'true-false' ||
       dataQuestion.question_type === 'single-select' ||
       dataQuestion.question_type === 'fill-in-the-blanks' ||
-      dataQuestion.question_type === 'highlight-correct-sentences'
-      ">
+      dataQuestion.question_type === 'highlight-correct-sentences' ||
+      dataQuestion.question_type === 'order-items'">
       <label for="generic-feedback">Generic Feedback:</label>
       <textarea v-model="dataQuestion.generic_feedback"></textarea>
       <br />
@@ -143,31 +176,18 @@
     </div>
     <hr />
     <button @click="deleteQuestion(index)">Delete Question</button>
-    <svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 18 18"
-            style="display: none;"
-					>
-          <symbol id="deleteButton" viewBox="0 0 18 18">
-						<g transform="translate(-3.375 -3.375)">
-							<path
-								id="Path_1"
-								data-name="Path 1"
-								d="M18.246,16.875H11.14c-.345,0-.628.285-.628.76a.678.678,0,0,0,.628.76h7.106a.773.773,0,0,0,0-1.519Z"
-								transform="translate(-2.318 -5.26)"
-								fill="#E51212"
-							/>
-							<path
-								id="Path_2"
-								data-name="Path 2"
-								d="M12.375,4.587a7.785,7.785,0,1,1-5.508,2.28,7.737,7.737,0,0,1,5.508-2.28m0-1.212a9,9,0,1,0,9,9,9,9,0,0,0-9-9Z"
-								fill="#E51212"
-							/>
-						</g>
-            </symbol>
-					</svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18" style="display: none;">
+      <symbol id="deleteButton" viewBox="0 0 18 18">
+        <g transform="translate(-3.375 -3.375)">
+          <path id="Path_1" data-name="Path 1"
+            d="M18.246,16.875H11.14c-.345,0-.628.285-.628.76a.678.678,0,0,0,.628.76h7.106a.773.773,0,0,0,0-1.519Z"
+            transform="translate(-2.318 -5.26)" fill="#E51212" />
+          <path id="Path_2" data-name="Path 2"
+            d="M12.375,4.587a7.785,7.785,0,1,1-5.508,2.28,7.737,7.737,0,0,1,5.508-2.28m0-1.212a9,9,0,1,0,9,9,9,9,0,0,0-9-9Z"
+            fill="#E51212" />
+        </g>
+      </symbol>
+    </svg>
   </div>
 </template>
 
@@ -195,8 +215,35 @@ export default {
       readyForChange: false,
     };
   },
+  computed: {
+    answerOptionsAsObject() {
+      return this.dataQuestion.answer_options;
+    },
+
+  },
 
   methods: {
+
+    handleOrderItemsUpdate(orderItemsData) {
+      this.dataQuestion.question_text = orderItemsData.question_text;
+      this.dataQuestion.answer_options = orderItemsData.answer_options;
+      this.readyForChange = true;
+    },
+    moveOptionUp(index) {
+      if (index > 0) {
+        const optionToMove = this.dataQuestion.answer_options[index];
+        this.dataQuestion.answer_options.splice(index, 1);
+        this.dataQuestion.answer_options.splice(index - 1, 0, optionToMove);
+      }
+    },
+    moveOptionDown(index) {
+      if (index < this.dataQuestion.answer_options.length - 1) {
+        const optionToMove = this.dataQuestion.answer_options[index];
+        this.dataQuestion.answer_options.splice(index, 1);
+        this.dataQuestion.answer_options.splice(index + 1, 0, optionToMove);
+      }
+    },
+
     handleHighlightCorrectSentencesUpdate(SentencesData) {
       this.dataQuestion.question_text = SentencesData.text;
       this.dataQuestion.correct_answer = SentencesData.correct_answer;
@@ -247,7 +294,11 @@ export default {
     },
 
     addOption() {
-      this.dataQuestion.answer_options.push({ text: "", isCorrect: false });
+      if (this.dataQuestion.question_type === "order-items") {
+        this.dataQuestion.answer_options.push(  "Add item" );
+      } else {
+        this.dataQuestion.answer_options.push({ text: "", isCorrect: false });
+      }
     },
     onQuestionTypeChange() {
       this.readyForChange = false;
@@ -326,6 +377,12 @@ export default {
             ],
           });
           break;
+        case "order-items":
+          this.handleOrderItemsUpdate({
+            question_text: "",
+            answer_options: [],
+          });
+          break;
         default:
           this.dataQuestion.answer_options = [];
           break;
@@ -353,7 +410,11 @@ export default {
     dataQuestion: {
       deep: true,
       handler() {
-        this.$emit("update:question", this.dataQuestion);
+        if (this.dataQuestion.question_type === "order-items") {
+          this.$emit("update:question", this.dataQuestion);
+        } else {
+          this.$emit("update:question", this.dataQuestion);
+        }
       },
     },
     readyForChange: {
@@ -366,19 +427,30 @@ export default {
 </script>
 
 <style scoped>
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+
+/* target transform only */
+.slide-move {
+  transition: transform .4s
+}
+
 .ActivityHeader {
   display: flex;
   justify-content: space-between;
 }
+
 .delete-option {
   position: relative;
   padding: 0 0.5rem 0 0;
   top: .25rem;
-  background-color:transparent;
+  background-color: transparent;
   box-shadow: none;
   border: none;
   border-radius: 0;
   margin: 4px 0px;
   cursor: pointer;
-}
-</style>
+}</style>

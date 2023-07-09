@@ -93,6 +93,9 @@
         v-else-if="question.question_type === 'highlight-correct-sentences'"
         :question="question"
       ></highlight-correct-sentence>
+      <order-items
+        v-else-if="question.question_type === 'order-items'"
+        :items="question"></order-items>
 
       <div v-else>This feature has no preview yet</div>
     </div>
@@ -104,11 +107,13 @@ import GradedQuiz from "./Previews/GradedQuiz.vue";
 import PersonalityQuiz from "./Previews/PersonalityQuiz.vue";
 import FillInTheBlanks from "./Previews/FillInTheBlanks.vue";
 import HighlightCorrectSentence from "./Previews/HighlightCorrectSentence.vue";
+import OrderItems from "./Previews/OrderItems.vue";
 export default {
   components: {
     GradedQuiz,
     PersonalityQuiz,
     FillInTheBlanks,
+    OrderItems,
     HighlightCorrectSentence,
   },
   props: {
