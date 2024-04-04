@@ -61,7 +61,7 @@
         <input type="text" v-model="option.text" :id="'option' + (qindex + 1)"/>
         &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" aria-label="select for correct answer" />
         <br />
-        <IndividualFeedback />
+        <IndividualFeedback :index="qindex + 1" />
       </div>
       <button class="add-option" @click.prevent="addOption">Add Option</button>
     </div>
@@ -299,7 +299,12 @@ export default {
     addOption() {
       if (this.dataQuestion.question_type === "order-items") {
         this.dataQuestion.answer_options.push(  "Add item" );
-      } else {
+      } else if (this.dataQuestion.question_type === "multiple-select") {
+        this.dataQuestion.answer_options.push({ text: "", isCorrect: false, feedback: "" });
+
+      }
+      
+      else {
         this.dataQuestion.answer_options.push({ text: "", isCorrect: false });
       }
     },
@@ -323,7 +328,9 @@ export default {
           this.handleHotSpotUpdate([]);
           break;
         case "single-select":
+          break;
         case "multiple-select":
+        this.dataQuestion.answer_options = [{ text: "", isCorrect: false, feedback: "" }];
           break;
         case "true-false":
           this.dataQuestion.answer_options = [
