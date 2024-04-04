@@ -47,7 +47,7 @@
 
     <!-- Multiple Select -->
     <div v-else-if="dataQuestion.question_type === 'multiple-select'">
-      <label for="question-text">Question Text: </label><input type="text" v-model="dataQuestion.question_text" />
+      <label for="question-text">Question Text: </label><input type="text" v-model="dataQuestion.question_text" id="question-text" />
       <div>
         <label for="question-instructions">Answer Instructions: </label><input type="text"
           v-model="dataQuestion.instructions" />
@@ -58,9 +58,10 @@
             <use href="#deleteButton"></use>
           </svg></button>
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
-        <input type="text" v-model="option.text" />
-        &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" />
+        <input type="text" v-model="option.text" :id="'option' + (qindex + 1)"/>
+        &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" aria-label="select for correct answer" />
         <br />
+        <IndividualFeedback />
       </div>
       <button class="add-option" @click.prevent="addOption">Add Option</button>
     </div>
@@ -198,6 +199,7 @@ import GradedQuiz from "./GradedQuiz.vue";
 import DragAndDrop from "./DragAndDrop.vue";
 import PersonalityQuiz from "./PersonalityQuiz.vue";
 import GenerateSentences from "./GenerateSentences.vue";
+import IndividualFeedback from "./IndividualFeedback.Vue";
 export default {
   props: ["index", "question"],
   emits: ["update:question", "delete-question", "update:readyForChange"],
@@ -208,6 +210,7 @@ export default {
     GradedQuiz,
     PersonalityQuiz,
     GenerateSentences,
+    IndividualFeedback
   },
   data() {
     return {
