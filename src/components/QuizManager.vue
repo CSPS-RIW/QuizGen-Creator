@@ -130,8 +130,8 @@
             <input type="checkbox" id="allow-language-switching" v-model="allowLanguageSwitching" />
           </div>
           <div>
-            <label for="display-individual-option-feedback">Display individual option feedback</label>
-            <input type="checkbox" id="display-individual-option-feedback" v-model="displayIndividualOptionFeedback" />
+            <label for="display-individual-otpion-feedback">Display individual option feedback</label>
+            <input type="checkbox" id="display-individual-otpion-feedback" v-model="displayIndividualOptionFeedback" />
           </div>
           <div>
             <label for="randomize-questions">Randomize questions</label>
@@ -256,7 +256,6 @@ export default {
             generic_feedback,
             correct_feedback,
             incorrect_feedback,
-            individual_feedback
           } = question;
 
           // Function to generate question object
@@ -277,7 +276,6 @@ export default {
                 generic_feedback,
                 correct_feedback,
                 incorrect_feedback,
-                individual_feedback
               };
             }
             return baseQuestion;
@@ -290,7 +288,6 @@ export default {
               ? answer_options.map((option, index) => ({
                 text: option.text,
                 isCorrect: option.isCorrect,
-                feedback: option.individual_feedback
               }))
               : question_type === "fill-in-the-blanks"
                 ? answer_options
@@ -299,23 +296,20 @@ export default {
                   : question_type === "order-items" ? answer_options
                     : undefined;
 
-          let processedCorrectAnswer;
-          
-          if (question_type === "single-select") {
-            processedCorrectAnswer = question.correct_answer;
-          } else if (question_type === "multiple-select") {
-            processedCorrectAnswer = processedAnswerOptions
-              .map((option, index) => (option.isCorrect ? index : -1))
-              .filter((index) => index !== -1);
-          } else if (question_type === "true-false") {
-            processedCorrectAnswer = answer_options.findIndex((option) => option.isCorrect);
-          } else if (question_type === "fill-in-the-blanks") {
-            processedCorrectAnswer = answer_options.map((option) => option.correctIndex);
-          } else if (question_type === "highlight-correct-sentences") {
-            processedCorrectAnswer = question.correct_answer;
-          } else {
-            processedCorrectAnswer = undefined;
-          }
+          const processedCorrectAnswer =
+            question_type === "single-select"
+              ? question.correct_answer
+              : question_type === "multiple-select"
+                ? processedAnswerOptions
+                  .map((option, index) => (option.isCorrect ? index : -1))
+                  .filter((index) => index !== -1)
+                : question_type === "true-false"
+                  ? answer_options.findIndex((option) => option.isCorrect)
+                  : question_type === "fill-in-the-blanks"
+                    ? answer_options.map((option) => option.correctIndex)
+                    : question_type === "highlight-correct-sentences"
+                      ? question.correct_answer
+                      : undefined;
           const gradedQuiz =
             question.question_type === "graded-quiz"
               ? question.gradedQuiz
@@ -335,7 +329,6 @@ export default {
             instructions,
             answer_options: processedAnswerOptions,
             correct_answer: processedCorrectAnswer,
-            individual_feedback,
             gradedQuiz,
             personalityQuiz,
             shapes,

@@ -47,7 +47,7 @@
 
     <!-- Multiple Select -->
     <div v-else-if="dataQuestion.question_type === 'multiple-select'">
-      <label for="question-text">Question Text: </label><input type="text" v-model="dataQuestion.question_text" id="question-text" />
+      <label for="question-text">Question Text: </label><input type="text" v-model="dataQuestion.question_text" />
       <div>
         <label for="question-instructions">Answer Instructions: </label><input type="text"
           v-model="dataQuestion.instructions" />
@@ -58,10 +58,9 @@
             <use href="#deleteButton"></use>
           </svg></button>
         <label :for="'option' + (qindex + 1)">Option {{ qindex + 1 }}:</label>
-        <input type="text" v-model="option.text" :id="'option' + (qindex + 1)"/>
-        &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" aria-label="select for correct answer" />
+        <input type="text" v-model="option.text" />
+        &nbsp;<input type="checkbox" :name="'question' + index + '-option'" v-model="option.isCorrect" />
         <br />
-        <IndividualFeedback :index="qindex + 1" />
       </div>
       <button class="add-option" @click.prevent="addOption">Add Option</button>
     </div>
@@ -199,7 +198,6 @@ import GradedQuiz from "./GradedQuiz.vue";
 import DragAndDrop from "./DragAndDrop.vue";
 import PersonalityQuiz from "./PersonalityQuiz.vue";
 import GenerateSentences from "./GenerateSentences.vue";
-import IndividualFeedback from "./IndividualFeedback.Vue";
 export default {
   props: ["index", "question"],
   emits: ["update:question", "delete-question", "update:readyForChange"],
@@ -210,7 +208,6 @@ export default {
     GradedQuiz,
     PersonalityQuiz,
     GenerateSentences,
-    IndividualFeedback
   },
   data() {
     return {
@@ -299,12 +296,7 @@ export default {
     addOption() {
       if (this.dataQuestion.question_type === "order-items") {
         this.dataQuestion.answer_options.push(  "Add item" );
-      } else if (this.dataQuestion.question_type === "multiple-select") {
-        this.dataQuestion.answer_options.push({ text: "", isCorrect: false, feedback: "" });
-
-      }
-      
-      else {
+      } else {
         this.dataQuestion.answer_options.push({ text: "", isCorrect: false });
       }
     },
@@ -328,9 +320,7 @@ export default {
           this.handleHotSpotUpdate([]);
           break;
         case "single-select":
-          break;
         case "multiple-select":
-        this.dataQuestion.answer_options = [{ text: "", isCorrect: false, feedback: "" }];
           break;
         case "true-false":
           this.dataQuestion.answer_options = [
